@@ -53,11 +53,17 @@ public class Player extends Entity {
                 Main.room = Main.rooms.get(Main.roomNum);
                 UI.doRoomTransition();
                 Room room = new Room(Main.copyRooms[Loader.randomInt(0, 1)]);
+                int numEnemies = Loader.randomInt(1, 3);
                 for (Point p : room.rockSpots) {
                     double prob = Main.roomNum;
                     if (prob < 75 && Math.random() * 100 < prob) {
                         room.addRock(new Tile(p.x, p.y, rock));
                     }
+                }
+                for (int i = 0; i < numEnemies; i++) {
+                    Point p = room.rockSpots.get(Loader.randomInt(0, room.rockSpots.size() - 1));
+                    room.addEnemy(new Slime(p.x, p.y));
+                    System.out.println(p);
                 }
                 Main.rooms.add(room);
             }

@@ -64,9 +64,9 @@ public class Room {
         for (GameArt art : art) {
             art.render(g);
         }
+        g.setColor(new Color(0, 0, 0, 60));
         for (GameObject obj : objects) {
             if (obj.hasShadow()) {
-                g.setColor(new Color(0, 0, 0, 60));
                 g.fill(new Ellipse2D.Double(obj.getX() + obj.getBounds().width * (1 - obj.getShadowMultiplier()) / 2, obj.getY() + 3 * obj.getBounds().height / 4f + 3 * obj.getBounds().height / 4f * (1 - obj.getShadowMultiplier()) / 4, obj.getBounds().width * obj.getShadowMultiplier(), obj.getBounds().getHeight() / 2 * obj.getShadowMultiplier()));
             }
         }
@@ -80,7 +80,7 @@ public class Room {
 
 
 
-    void addEnemy(Slime obj) {
+    public void addEnemy(Slime obj) {
         enemies.add(obj);
         objects.add(0, obj);
     }

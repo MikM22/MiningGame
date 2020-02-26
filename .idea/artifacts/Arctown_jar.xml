@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Arctown:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Arctown_jar</output-path>
+    <root id="archive" name="Arctown.jar">
+      <element id="module-output" name="Arctown" />
+    </root>
+  </artifact>
+</component>

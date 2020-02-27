@@ -35,8 +35,9 @@ public class Main extends Canvas implements Runnable {
     public static Player player;
     private boolean fullscreen;
     private final BufferedImage[] tiles = new BufferedImage[90];
-    public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 3, 1, Room.imageMult, 8, 8), items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16);
+    public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 3, 1, Room.imageMult, 8, 8), items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, Room.imageMult, 16, 16);
     private Weapon test = new Weapon(items[1], 2, .5f, 17, 5, 5);
+    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 17, 5, 5, 10, 5);
 
     //optimization idea: pass in the Affinetransform old instead of setting it so much
 
@@ -112,7 +113,7 @@ public class Main extends Canvas implements Runnable {
                 if (e.getKeyCode() == KeyEvent.VK_E) {
                     for (ItemSpot itemSpot : room.itemSpots) {
                         if (player.getIntersectionBounds().intersects(itemSpot.getBounds())) {
-                            player.setWeapon(test);
+                            player.setWeapon(itemSpot.weapon);
                             break;
                         }
                     }
@@ -121,7 +122,7 @@ public class Main extends Canvas implements Runnable {
                     player.swordSlice.setSpeed(100);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_G) {
-                    for (int i = 0; i < 100; i++) {
+                    for (int i = 0; i < 1000; i++) {
                         Main.room.addGold(7, 7);
                     }
                 }
@@ -135,6 +136,7 @@ public class Main extends Canvas implements Runnable {
                 keysDown.remove(Integer.valueOf(e.getKeyCode()));
             }
         });
+        player.setWeapon(rangeTest);
         start();
     }
 
@@ -235,7 +237,7 @@ public class Main extends Canvas implements Runnable {
         int numRotations = 0;
         int xPos = 0, yPos = 0;
         ArrayList<Tile> bigTiles = new ArrayList<>();
-        Weapon[] shop = new Weapon[]{test, test, null};
+        Weapon[] shop = new Weapon[]{test, rangeTest, null};
         int tileNum = 0;
 
         for (int x = 0; x < s.length() ; x++) {

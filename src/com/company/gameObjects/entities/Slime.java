@@ -17,7 +17,7 @@ public class Slime extends Entity {
     private static final BufferedImage flashImg = Loader.colorImage(slimeFrames[2], Color.white), redImg = Loader.colorImage(slimeFrames[0], Color.red);
 
     public Slime(int x, int y) {
-        super(x, y);
+        super(x * Room.tw, y * Room.tw);
         img = slimeFrames[0];
     }
 

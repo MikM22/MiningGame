@@ -7,7 +7,7 @@ import java.awt.*;
 import static com.company.Room.tw;
 
 public class ItemSpot extends GameArt {
-    private Weapon weapon;
+    public Weapon weapon;
 
     public ItemSpot(int x, int y, Weapon weapon) {
         super(x * tw, y * tw);

@@ -18,8 +18,10 @@ public class UI {
     private BufferedImage[] hpBar = Loader.cutSpriteSheet("hpBar", 1, 3, Room.imageMult, 16, 16);
     private BufferedImage goldIcon = Loader.loadImage("goldIcon", Room.imageMult), goldBG = Loader.loadImage("goldBG", Room.imageMult);
     private Color red = new Color(182, 18, 14), blue = new Color(45, 7, 191), gold = new Color(232, 170, 53);
+    public static String goldString = "0";
     private static int timer;
     private static boolean transitioning;
+    private FontMetrics fm;
 
     public UI(Main main) {
         pixel = loadFont("PixelFJVerdana12pt", Font.BOLD, 20);
@@ -29,13 +31,13 @@ public class UI {
         futile = loadFont("FutilePro", Font.PLAIN, 50);
         matchup = loadFont("MatchupPro", Font.PLAIN, 50);
         bigMatchup = loadFont("MatchupPro", Font.PLAIN, 60);
+        fm = new Canvas().getFontMetrics(matchup);
         main.mouseAdapter = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 Display.mouseDown = true;
             }
             public void mouseReleased(MouseEvent e) {
                 Display.mouseDown = false;
-                //System.out.println(mousePos);
             }
         };
     }
@@ -80,7 +82,7 @@ public class UI {
         g.drawImage(goldIcon, 3 * gap + 64, height - gap - Room.tw * 2, null);
         g.setFont(matchup);
         g.setColor(gold);
-        g.drawString(Main.player.gold + "G", 4 * gap + 108, height - gap - 60);
+        g.drawString(goldString, 4 * gap + 176 - fm.stringWidth(goldString), height - gap - 60);
     }
 
     public static void doRoomTransition() {

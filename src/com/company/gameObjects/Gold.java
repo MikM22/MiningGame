@@ -3,10 +3,13 @@ package com.company.gameObjects;
 import com.company.Loader;
 import com.company.Main;
 import com.company.Room;
+import com.company.rendering.UI;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+
+import static com.company.rendering.Display.height;
 
 public class Gold extends GameObject {
     private static BufferedImage img = Loader.loadImage("gold", Room.imageMult);
@@ -41,6 +44,16 @@ public class Gold extends GameObject {
                 Main.room.objects.add(new DamageIndicator(x, y, true));
                 Main.room.addParticle(x, y, 4, 10, .4f, .7f, 0, 0, 4, false, false, false, false, true, 0, Main.particles[2]);
                 Main.room.objects.remove(this);
+                if (Main.player.gold < 1000) {
+                    UI.goldString = "" + Main.player.gold;
+                } else {
+                    float n = Math.round(Main.player.gold / 100f) / 10f;
+                    if ((int)n != n) {
+                        UI.goldString = n + "k";
+                    } else {
+                        UI.goldString = (int)n + "k";
+                    }
+                }
             }
         }
     }

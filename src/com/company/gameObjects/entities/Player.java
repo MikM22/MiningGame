@@ -6,6 +6,7 @@ import com.company.Room;
 import com.company.Weapon;
 import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
+import com.company.gameObjects.Projectile;
 import com.company.rendering.*;
 
 import java.awt.*;
@@ -53,17 +54,21 @@ public class Player extends Entity {
                 Main.room = Main.rooms.get(Main.roomNum);
                 UI.doRoomTransition();
                 Room room = new Room(Main.copyRooms[Loader.randomInt(0, 1)]);
-                int numEnemies = Loader.randomInt(1, 3);
-                for (Point p : room.rockSpots) {
-                    double prob = Main.roomNum;
-                    if (prob < 75 && Math.random() * 100 < prob) {
+                double prob = Main.roomNum * 20;
+                if (prob > 75) {
+                    prob = 75;
+                }
+                for (int i = 0; i < room.rockSpots.size(); i++) {
+                    Point p = room.rockSpots.get(i);
+                    if (Math.random() * 100 < prob) {
                         room.addRock(new Tile(p.x, p.y, rock));
+                        room.rockSpots.remove(p);
+                        i--;
                     }
                 }
-                for (int i = 0; i < numEnemies; i++) {
+                if (room.rockSpots.size() > 0) {
                     Point p = room.rockSpots.get(Loader.randomInt(0, room.rockSpots.size() - 1));
                     room.addEnemy(new Slime(p.x, p.y));
-                    System.out.println(p);
                 }
                 Main.rooms.add(room);
             }
@@ -73,62 +78,17 @@ public class Player extends Entity {
         cx = x + getBounds().width / 2;
         cy = y + getBounds().height / 2;
         selectionAngle = Math.atan2(Display.mousePos.x - cx, Display.mousePos.y - cy);
-            if (!swordSlice.isRunning()) {
-                angle = selectionAngle;
+        if (!currentWeapon.melee) {
+            double angle = Math.PI / 2 - selectionAngle;
+            swordAngle = -Math.PI / 4 - selectionAngle;
+            wx = cx + (int) (30 * Math.cos(angle));
+            wy = cy + (int) (30 * Math.sin(angle));
+            if (mouseDown && mousePressed || buffer) {
+                Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getWidth()) * Math.sin(angle)), angle, currentWeapon.speed, Main.projectiles[0]));
             }
-            sliceAngle = Math.PI / 2 - angle;
-            if (angle > 0) {
-                swordAngle = 3 * Math.PI / 4 - angle;
-                if (mouseLeft) {
-                    attackTime = -attackTime;
-                }
-                mouseLeft = false;
-                swordSlice.setFlipped(!attackLeft);
-            } else {
-                swordAngle = 5 * Math.PI / 4 - angle;
-                if (!mouseLeft) {
-                    attackTime = -attackTime;
-                }
-                mouseLeft = true;
-                swordSlice.setFlipped(attackLeft);
-            }
-            if (swordSlice.isRunning()) {
-                attackTime += (swordSlice.isFlipped() ? 1 : -1) * .75f;
-                if (mouseLeft) {
-                    if (attackTime < 0) {
-                        attackTime = 0;
-                    }
-                    if (attackTime > 3) {
-                        attackTime = 3;
-                    }
-                } else {
-                    if (attackTime < -3) {
-                        attackTime = -3;
-                    }
-                    if (attackTime > 0) {
-                        attackTime = 0;
-                    }
-                }
-            }
-            wx = cx + (int) (40 * Math.sin((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2));
-            wy = cy + (int) (40 * Math.cos((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2)) + 10;
-            attackTime += (swordSlice.isFlipped() ? 1 : -1) * .75f;
-            if (mouseLeft) {
-                if (attackTime < 0) {
-                    attackTime = 0;
-                }
-                if (attackTime > 3) {
-                    attackTime = 3;
-                }
-            } else {
-                if (attackTime < -3) {
-                    attackTime = -3;
-                }
-                if (attackTime > 0) {
-                    attackTime = 0;
-                }
-            }
-            swordSlice.runAnimation();
+        }
+        if (currentWeapon.melee || !holdingWeapon) {
+            calculateSword();
             if (mouseDown && mousePressed || buffer) {
                 if (!swordSlice.isRunning()) {
                     attackLeft = !attackLeft;
@@ -152,21 +112,19 @@ public class Player extends Entity {
                                 chicken.hit(angle);
                             }
                         }
+                    } else {
+                        for (int i = 0; i < Main.room.rocks.size(); i++) {
+                            if (getSliceBounds().intersects(Main.room.rocks.get(i).getBounds())) {
+                                Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, Main.particles[1]);
+                                Main.room.art.remove(Main.room.rocks.get(i));
+                                Main.room.walls.remove(Main.room.rocks.get(i));
+                                Main.room.rocks.remove(Main.room.rocks.get(i));
+                                i--;
+                            }
+                        }
                     }
                 } else {
                     buffer = true;
-                }
-            }
-        if (!holdingWeapon) {
-            if (mouseDown && mousePressed || buffer) {
-                for (int i = 0; i < Main.room.rocks.size(); i++) {
-                    if (getSliceBounds().intersects(Main.room.rocks.get(i).getBounds())) {
-                        Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, Main.particles[1]);
-                        Main.room.art.remove(Main.room.rocks.get(i));
-                        Main.room.walls.remove(Main.room.rocks.get(i));
-                        Main.room.rocks.remove(Main.room.rocks.get(i));
-                        i--;
-                    }
                 }
             }
         }
@@ -270,5 +228,64 @@ public class Player extends Entity {
             y = Main.room.mapY;
             yVel = 0;
         }
+    }
+
+    private void calculateSword() {
+        if (!swordSlice.isRunning()) {
+            angle = selectionAngle;
+        }
+        sliceAngle = Math.PI / 2 - angle;
+        if (angle > 0) {
+            swordAngle = 3 * Math.PI / 4 - angle;
+            if (mouseLeft) {
+                attackTime = -attackTime;
+            }
+            mouseLeft = false;
+            swordSlice.setFlipped(!attackLeft);
+        } else {
+            swordAngle = 5 * Math.PI / 4 - angle;
+            if (!mouseLeft) {
+                attackTime = -attackTime;
+            }
+            mouseLeft = true;
+            swordSlice.setFlipped(attackLeft);
+        }
+        if (swordSlice.isRunning()) {
+            attackTime += (swordSlice.isFlipped() ? 1 : -1) * .75f;
+            if (mouseLeft) {
+                if (attackTime < 0) {
+                    attackTime = 0;
+                }
+                if (attackTime > 3) {
+                    attackTime = 3;
+                }
+            } else {
+                if (attackTime < -3) {
+                    attackTime = -3;
+                }
+                if (attackTime > 0) {
+                    attackTime = 0;
+                }
+            }
+        }
+        wx = cx + (int) (40 * Math.sin((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2));
+        wy = cy + (int) (40 * Math.cos((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2)) + 10;
+        attackTime += (swordSlice.isFlipped() ? 1 : -1) * .75f;
+        if (mouseLeft) {
+            if (attackTime < 0) {
+                attackTime = 0;
+            }
+            if (attackTime > 3) {
+                attackTime = 3;
+            }
+        } else {
+            if (attackTime < -3) {
+                attackTime = -3;
+            }
+            if (attackTime > 0) {
+                attackTime = 0;
+            }
+        }
+        swordSlice.runAnimation();
     }
 }

@@ -37,7 +37,7 @@ public class Main extends Canvas implements Runnable {
     private final BufferedImage[] tiles = new BufferedImage[90];
     public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 3, 1, Room.imageMult, 8, 8), items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, Room.imageMult, 16, 16);
     private Weapon test = new Weapon(items[1], 2, .5f, 17, 5, 5);
-    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 17, 5, 5, 10, 5);
+    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 17, 5, 5, 10, 10);
 
     //optimization idea: pass in the Affinetransform old instead of setting it so much
 

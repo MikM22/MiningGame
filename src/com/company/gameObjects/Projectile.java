@@ -2,17 +2,19 @@ package com.company.gameObjects;
 
 import com.company.Loader;
 import com.company.Main;
-import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
-import com.company.gameObjects.entities.Entity;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 public class Projectile extends GameObject {
     private double angle;
     private int speed;
     private float x, y;
+    private int wallTimer;
+    private boolean inWall, shouldTick = true;
 
     public Projectile(float x, float y, double angle, int speed, BufferedImage img) {
         super(0, 0);
@@ -25,92 +27,43 @@ public class Projectile extends GameObject {
     }
 
     public void tick() {
-        xVel = (float) (Math.cos(angle) * speed);
-        yVel = (float) (Math.sin(angle) * speed);
-        checkCollision();
-        x += xVel;
-        y += yVel;
+        if (shouldTick) {
+            xVel = (float) (Math.cos(angle) * speed);
+            yVel = (float) (Math.sin(angle) * speed);
+            checkCollision();
+            if (inWall) {
+                wallTimer++;
+                if (wallTimer > 5) {
+                    xVel = 0;
+                    yVel = 0;
+                    shouldTick = false;
+                }
+            }
+            x += xVel;
+            y += yVel;
+        }
     }
 
     public void render(Graphics2D g) {
         Loader.renderRotatedImage(g, g.getTransform(), angle + 3 * Math.PI / 4, (int)x, (int)y, img, (int)x, (int)y);
-        g.setColor(Color.red);
-        g.fill(getBounds());
     }
 
     public Rectangle getBounds() {
-        return new Rectangle((int)x, (int)y, img.getWidth(), img.getHeight());
+        return new Rectangle((int)x - 12, (int)y, img.getWidth() - 30, img.getHeight());
     }
 
-    public Rectangle getOffsetBoundsH() {
-        return new Rectangle((int)(x + xVel), (int)y, getBounds().width, getBounds().height);
+    private Area getRotatedBounds() {
+        Area a = new Area(getBounds());
+        AffineTransform af = new AffineTransform();
+        af.rotate(angle + 2 * Math.PI / 4, x, y);
+        return a.createTransformedArea(af);
     }
 
-    public Rectangle getOffsetBoundsV() {
-        return new Rectangle((int)x, (int)(y + yVel), getBounds().width, getBounds().height);
-    }
-
-    public void checkCollision() {
-        for (Tile obj : Main.room.walls) {
-            if (getOffsetBoundsH().intersects(obj.getBounds())) {
-                if (xVel > 0) {
-                    x = obj.x - getBounds().width;
-                } else if (xVel < 0) {
-                    x = obj.x + obj.getBounds().width;
-                }
-                xVel = 0;
-                yVel = 0;
+    private void checkCollision() {
+        for (Tile wall : Main.room.walls) {
+            if (getRotatedBounds().intersects(wall.getBounds())) {
+                inWall = true;
             }
-            if (getOffsetBoundsV().intersects(obj.getBounds())) {
-                if (yVel > 0) {
-                    y = obj.y - getOffsetBoundsV().height;
-                } else if (yVel < 0) {
-                    y = obj.y + obj.getBounds().height;
-                }
-                xVel = 0;
-                yVel = 0;
-            }
-        }
-        for (Door obj : Main.room.doors) {
-            if (getOffsetBoundsH().intersects(obj.getBounds())) {
-                if (xVel > 0) {
-                    x = obj.x - getBounds().width;
-                } else if (xVel < 0) {
-                    x = obj.x + obj.getBounds().width;
-                }
-                xVel = 0;
-                yVel = 0;
-            }
-            if (getOffsetBoundsV().intersects(obj.getBounds())) {
-                if (yVel > 0) {
-                    y = obj.y - getOffsetBoundsV().height;
-                } else if (yVel < 0) {
-                    y = obj.y + obj.getBounds().height;
-                }
-                xVel = 0;
-                yVel = 0;
-            }
-        }
-        if (getOffsetBoundsH().x < 0) {
-            x = 0;
-            xVel = 0;
-            yVel = 0;
-        }
-        if (getOffsetBoundsH().x > Main.room.mapX) {
-            x = Main.room.mapX;
-            xVel = 0;
-            yVel = 0;
-        }
-
-        if (getOffsetBoundsV().y < 0) {
-            y = 0;
-            xVel = 0;
-            yVel = 0;
-        }
-        if (getOffsetBoundsV().y > Main.room.mapY) {
-            y = Main.room.mapY;
-            xVel = 0;
-            yVel = 0;
         }
     }
 }

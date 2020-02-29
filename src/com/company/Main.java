@@ -127,9 +127,13 @@ public class Main extends Canvas implements Runnable {
                     }
                 }
                 if (e.getKeyCode() == KeyEvent.VK_Q) {
-                    player.holdingWeapon = !player.holdingWeapon;
-                    player.swordSlice.setScale(player.holdingWeapon ? player.currentWeapon.xRangeScale: .6f, player.holdingWeapon ? player.currentWeapon.yRangeScale: 1);
-                    player.swordSlice.setSpeed(player.holdingWeapon ? player.currentWeapon.attackTime : 2);
+                    if (player.state == 0) {
+                        player.state = player.currentWeapon.type;
+                    } else {
+                        player.state = 0;
+                    }
+                    player.swordSlice.setScale(player.state != 0 ? player.currentWeapon.xRangeScale: .6f, player.state != 0 ? player.currentWeapon.yRangeScale: 1);
+                    player.swordSlice.setSpeed(player.state != 0 ? player.currentWeapon.attackTime : 2);
                 }
             }
             public void keyReleased(KeyEvent e) {

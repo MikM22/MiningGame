@@ -2,6 +2,7 @@ package com.company.gameObjects;
 
 import com.company.Loader;
 import com.company.Main;
+import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public class Projectile extends GameObject {
             checkCollision();
             if (inWall) {
                 wallTimer++;
-                if (wallTimer > 5) {
+                if (wallTimer > 2) {
                     xVel = 0;
                     yVel = 0;
                     shouldTick = false;
@@ -65,5 +66,15 @@ public class Projectile extends GameObject {
                 inWall = true;
             }
         }
+        for (Door door : Main.room.doors) {
+            if (getRotatedBounds().intersects(door.getBounds())) {
+                inWall = true;
+            }
+        }
+        if (x < 0 || x > Main.room.mapX || y < 0 || y > Main.room.mapY) {
+            inWall = true;
+        }
     }
+
+
 }

@@ -26,7 +26,7 @@ public class Player extends Entity {
     private final PlayerAnimation playerAnimation;
     private double angle, sliceAngle, swordAngle, selectionAngle;
     private boolean mousePressed, attackLeft, mouseLeft, buffer;
-    public boolean holdingWeapon = false;
+    public int state;
     public int hpUpgrades = 1, manaUpgrades = 1, maxHP = 100, hp = maxHP, maxMP = 100, mp = maxMP, gold;
     public BufferedImage[] imgs = Loader.cutSpriteSheet("player", 4, 1, Room.imageMult, 16, 20);
     public Weapon currentWeapon = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
@@ -35,7 +35,7 @@ public class Player extends Entity {
         super(x, y);
         img = imgs[0];
         playerAnimation = new PlayerAnimation(this);
-        if (!holdingWeapon) {
+        if (state == 0) {
             swordSlice.setScale(.6f, 1);
         }
     }
@@ -78,30 +78,68 @@ public class Player extends Entity {
         cx = x + getBounds().width / 2;
         cy = y + getBounds().height / 2;
         selectionAngle = Math.atan2(Display.mousePos.x - cx, Display.mousePos.y - cy);
-        if (!currentWeapon.melee) {
-            double angle = Math.PI / 2 - selectionAngle;
-            swordAngle = -Math.PI / 4 - selectionAngle;
-            wx = cx + (int) (30 * Math.cos(angle));
-            wy = cy + (int) (30 * Math.sin(angle));
-            if (mouseDown && mousePressed || buffer) {
-                Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getWidth()) * Math.sin(angle)), angle, currentWeapon.speed, Main.projectiles[0]));
-            }
+        switch (state) {
+            case 0:
+                calculateSword();
+                break;
+            case 1:
+                calculateSword();
+                break;
+            case 2:
+                double angle = Math.PI / 2 - selectionAngle;
+                swordAngle = -Math.PI / 4 - selectionAngle;
+                wx = cx + (int) (30 * Math.cos(angle));
+                wy = cy + (int) (30 * Math.sin(angle));
+                break;
+            case 3:
+
+                break;
         }
-        if (currentWeapon.melee || !holdingWeapon) {
-            calculateSword();
-            if (mouseDown && mousePressed || buffer) {
-                if (!swordSlice.isRunning()) {
-                    attackLeft = !attackLeft;
-                    if (attackLeft) {
-                        attackTime = 0;
+        input();
+        playerAnimation.repeatAnimation();
+        mousePressed = !mouseDown;
+    }
+
+    private void input() {
+        if (mouseDown && mousePressed || buffer) {
+            switch (state) {
+                case 0:
+                    if (!swordSlice.isRunning()) {
+                        attackLeft = !attackLeft;
+                        if (attackLeft) {
+                            attackTime = 0;
+                        }
+                        swordSlice.flip();
+                        swordSlice.restart();
+                        if (buffer) {
+                            buffer = false;
+                            angle = selectionAngle;
+                        }
+                        for (int i = 0; i < Main.room.rocks.size(); i++) {
+                            if (getSliceBounds().intersects(Main.room.rocks.get(i).getBounds())) {
+                                Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, Main.particles[1]);
+                                Main.room.art.remove(Main.room.rocks.get(i));
+                                Main.room.walls.remove(Main.room.rocks.get(i));
+                                Main.room.rocks.remove(Main.room.rocks.get(i));
+                                i--;
+                            }
+                        }
+                    } else {
+                        buffer = true;
                     }
-                    swordSlice.flip();
-                    swordSlice.restart();
-                    if (buffer) {
-                        buffer = false;
-                        angle = selectionAngle;
-                    }
-                    if (holdingWeapon) {
+                    break;
+                case 1:
+                    if (!swordSlice.isRunning()) {
+                        attackLeft = !attackLeft;
+                        if (attackLeft) {
+                            attackTime = 0;
+                        }
+                        swordSlice.flip();
+                        swordSlice.restart();
+                        if (buffer) {
+                            buffer = false;
+                            angle = selectionAngle;
+                        }
                         for (Slime enemy : Main.room.enemies) {
                             if (getSliceBounds().intersects(enemy.getBounds()) && enemy.getHeight() == 0) {
                                 enemy.hit(angle, currentWeapon.damage, currentWeapon.KBMultiplier);
@@ -113,46 +151,57 @@ public class Player extends Entity {
                             }
                         }
                     } else {
-                        for (int i = 0; i < Main.room.rocks.size(); i++) {
-                            if (getSliceBounds().intersects(Main.room.rocks.get(i).getBounds())) {
-                                Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, Main.particles[1]);
-                                Main.room.art.remove(Main.room.rocks.get(i));
-                                Main.room.walls.remove(Main.room.rocks.get(i));
-                                Main.room.rocks.remove(Main.room.rocks.get(i));
-                                i--;
-                            }
-                        }
+                        buffer = true;
                     }
-                } else {
-                    buffer = true;
-                }
+                    break;
+                case 2:
+                    double angle = Math.PI / 2 - selectionAngle;
+                    Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed, Main.projectiles[0]));
+                    break;
+                case 3:
+
+                    break;
             }
         }
-        playerAnimation.repeatAnimation();
-        mousePressed = !mouseDown;
     }
 
     public void render(Graphics2D g) {
         AffineTransform old = g.getTransform();
-        if (holdingWeapon) {
+        if (state != 0) {
             g.drawImage((playerAnimation.isFlipped() ? pickaxe : pickaxeFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
         } else {
             g.drawImage((playerAnimation.isFlipped() ? currentWeapon.img : currentWeapon.imgFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
         }
-        BufferedImage img = holdingWeapon ? (angle > 0 ? currentWeapon.img : currentWeapon.imgFlipped) : (angle > 0 ? pickaxe : pickaxeFlipped);
+        BufferedImage img = null;
+        if (state == 0) {
+            img = angle > 0 ? pickaxe : pickaxeFlipped;
+        } else if (state == 1) {
+            img = angle > 0 ? currentWeapon.img : currentWeapon.imgFlipped;
+        } else if (state == 2) {
+            img = currentWeapon.img;
+        }
         if (wy > y + getBounds().width / 2) {
             Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, holdingWeapon ? x + 30 : x, y - 40);
-            Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, state != 0 ? x + 30 : x, y - 40);
+            if (state == 1 || state == 0) {
+                Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+            } else if (state == 2) {
+                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+            }
         } else {
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, holdingWeapon ? x + 30 : x, y - 40);
-            Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, state != 0 ? x + 30 : x, y - 40);
+            if (state == 1  || state == 0) {
+                Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+            } else if (state == 2) {
+                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+            }
             Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
         }
     }
 
     public void setWeapon(Weapon weapon) {
         currentWeapon = weapon;
+        state = weapon.type;
         swordSlice.setScale(weapon.xRangeScale, weapon.yRangeScale);
         swordSlice.setSpeed(weapon.attackTime);
     }

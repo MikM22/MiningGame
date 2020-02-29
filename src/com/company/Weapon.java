@@ -7,11 +7,10 @@ public class Weapon {
     public float xRangeScale, yRangeScale;
     public int attackTime, damage, KBMultiplier;
 
-    public boolean melee;
-    public int range, speed;
+    public int range, speed, type;
 
     public Weapon(BufferedImage img, float xRangeScale, float yRangeScale, int attackTime, int damage, int KBMultiplier) {
-        melee = true;
+        type = 1;
         this.img = img;
         imgFlipped = Loader.flipped(img, true);
         this.xRangeScale = xRangeScale;
@@ -22,7 +21,7 @@ public class Weapon {
     }
 
     public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int KBMultiplier, int range, int speed) {
-        melee = false;
+        type = 2;
         this.img = img;
         imgFlipped = Loader.flipped(img, true);
         this.projectileImg = projectileImg;

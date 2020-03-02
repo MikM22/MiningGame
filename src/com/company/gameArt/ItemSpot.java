@@ -1,5 +1,6 @@
 package com.company.gameArt;
 
+import com.company.Main;
 import com.company.Weapon;
 
 import java.awt.*;
@@ -17,6 +18,9 @@ public class ItemSpot extends GameArt {
     public void render(Graphics g) {
         if (weapon != null) {
             g.drawImage(weapon.img, x, y, null);
+            if (weapon.type == 2) {
+                g.drawImage(Main.player.string, x, y, null);
+            }
         }
     }
 

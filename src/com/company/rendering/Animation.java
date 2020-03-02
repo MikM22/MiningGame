@@ -17,7 +17,6 @@ public class Animation {
         this.speed = speed;
         this.img = img;
         flipped = Loader.flipped(img, flipHorizontally);
-        currentImg = null;
     }
 
     public void restart() {
@@ -86,6 +85,10 @@ public class Animation {
 
     public BufferedImage getFirstImage() {
         return img[0];
+    }
+
+    public void drawCroppedAnimation(Graphics g, double x, double y, int rx, int ry, int w, int h) {
+        g.drawImage(currentImg.getSubimage(rx, ry, w, h), (int) x, (int) y, null);
     }
 
     public void drawAnimation(Graphics g, double x, double y, int offset){

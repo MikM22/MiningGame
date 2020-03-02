@@ -6,6 +6,7 @@ import com.company.Room;
 import com.company.Weapon;
 import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
+import com.company.gameObjects.DamageIndicator;
 import com.company.gameObjects.Projectile;
 import com.company.rendering.*;
 
@@ -21,15 +22,17 @@ public class Player extends Entity {
     private int wx, wy, cx, cy;
     private final BufferedImage pickaxe = Loader.loadImage("pickaxe", Room.imageMult), pickaxeFlipped = Loader.flipped(pickaxe, true);
     private final BufferedImage rock = Loader.loadImage("rock", Room.imageMult);
-    private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32);
+    private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32), bowString = Loader.cutSpriteSheet("bowString", 4, 1, Room.imageMult, 16, 16);
+    public final BufferedImage string = bowString[0];
     public final Animation swordSlice = new Animation(2, swordSliceImgs, false);
     private final PlayerAnimation playerAnimation;
     private double angle, sliceAngle, swordAngle, selectionAngle;
-    private boolean mousePressed, attackLeft, mouseLeft, buffer;
+    private boolean mousePressed = true, attackLeft, mouseLeft, buffer;
     public int state;
-    public int hpUpgrades = 1, manaUpgrades = 1, maxHP = 100, hp = maxHP, maxMP = 100, mp = maxMP, gold;
+    public int maxHP = 100, hp = maxHP, maxMP = 100, mp = maxMP, gold;
+    private int bowPower, bowHeldTimer, timeSinceLastBow;
     public BufferedImage[] imgs = Loader.cutSpriteSheet("player", 4, 1, Room.imageMult, 16, 20);
-    public Weapon currentWeapon = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
+    public Weapon currentWeapon;
 
     public Player(int x, int y) {
         super(x, y);
@@ -53,8 +56,8 @@ public class Player extends Entity {
                 y = (Main.room.yTiles + 1) / 2 * Room.tw;
                 Main.room = Main.rooms.get(Main.roomNum);
                 UI.doRoomTransition();
-                Room room = new Room(Main.copyRooms[Loader.randomInt(0, 1)]);
-                double prob = Main.roomNum * 20;
+                Room room = new Room(Main.copyRooms[Loader.randomInt(0, Main.roomsIveCompleted)]);
+                double prob = Main.roomNum;
                 if (prob > 75) {
                     prob = 75;
                 }
@@ -90,6 +93,7 @@ public class Player extends Entity {
                 swordAngle = -Math.PI / 4 - selectionAngle;
                 wx = cx + (int) (30 * Math.cos(angle));
                 wy = cy + (int) (30 * Math.sin(angle));
+                timeSinceLastBow++;
                 break;
             case 3:
 
@@ -117,7 +121,7 @@ public class Player extends Entity {
                         }
                         for (int i = 0; i < Main.room.rocks.size(); i++) {
                             if (getSliceBounds().intersects(Main.room.rocks.get(i).getBounds())) {
-                                Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, Main.particles[1]);
+                                Main.room.addParticle(Main.room.rocks.get(i).x + Room.tw / 2, Main.room.rocks.get(i).y + Room.tw / 2, Loader.randomInt(4, 8), 5, .4f, .8f, .5f, 3, 3, true, true, true, true, false, 0, 0, Main.particles[1]);
                                 Main.room.art.remove(Main.room.rocks.get(i));
                                 Main.room.walls.remove(Main.room.rocks.get(i));
                                 Main.room.rocks.remove(Main.room.rocks.get(i));
@@ -143,6 +147,7 @@ public class Player extends Entity {
                         for (Slime enemy : Main.room.enemies) {
                             if (getSliceBounds().intersects(enemy.getBounds()) && enemy.getHeight() == 0) {
                                 enemy.hit(angle, currentWeapon.damage, currentWeapon.KBMultiplier);
+                                Main.room.objects.add(new DamageIndicator(x, y, false));
                             }
                         }
                         for (Chicken chicken : Main.room.chickens) {
@@ -155,13 +160,34 @@ public class Player extends Entity {
                     }
                     break;
                 case 2:
-                    double angle = Math.PI / 2 - selectionAngle;
-                    Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed, Main.projectiles[0]));
+                    bowPower = 1;
                     break;
                 case 3:
 
                     break;
             }
+        }
+        if (mouseDown) {
+            if (state == 2) {
+                if (bowPower < 3) {
+                    bowHeldTimer++;
+                    if (bowHeldTimer > 30) {
+                        bowHeldTimer = 0;
+                        bowPower++;
+                    }
+                }
+            }
+        }
+        if (!mousePressed && !mouseDown) {
+            if (state == 2) {
+                if (timeSinceLastBow > currentWeapon.attackTime) {
+                    double angle = Math.PI / 2 - selectionAngle;
+                    Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed * bowPower, currentWeapon.damage, bowPower, Main.projectiles[0]));
+                    timeSinceLastBow = 0;
+                }
+            }
+            bowPower = 0;
+            bowHeldTimer = 0;
         }
     }
 
@@ -180,20 +206,23 @@ public class Player extends Entity {
         } else if (state == 2) {
             img = currentWeapon.img;
         }
+        int h = (int)(32 * 5 * swordSlice.getyScale());
         if (wy > y + getBounds().width / 2) {
             Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, state != 0 ? x + 30 : x, y - 40);
+            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h/2);
             if (state == 1 || state == 0) {
                 Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
             } else if (state == 2) {
                 Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
             }
         } else {
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, state != 0 ? x + 30 : x, y - 40);
+            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h/2);
             if (state == 1  || state == 0) {
                 Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
             } else if (state == 2) {
                 Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
             }
             Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
         }
@@ -215,7 +244,7 @@ public class Player extends Entity {
     }
 
     private Area getSliceBounds() {
-        Area a = new Area(new Rectangle(x + 30, y - 20, (int)(32 * 5 * swordSlice.getxScale()), 20 * 5));
+        Area a = new Area(new Rectangle(cx, cy - (int)(10 * 5 * swordSlice.getyScale()), (int)(32 * 5 * swordSlice.getxScale()), (int)(20 * 5 * swordSlice.getyScale())));
         AffineTransform af = new AffineTransform();
         af.rotate(sliceAngle, cx, cy);
         return a.createTransformedArea(af);

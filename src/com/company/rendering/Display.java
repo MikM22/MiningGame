@@ -12,6 +12,7 @@ public class Display {
     public static int width, height;
     public static boolean mouseDown;
     public static Point mousePos = new Point();
+    public static Rectangle mouseRect = new Rectangle();
     public JFrame frame;
     public boolean transitioning;
 

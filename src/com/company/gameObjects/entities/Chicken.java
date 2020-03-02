@@ -88,13 +88,13 @@ public class Chicken extends Entity {
         anim.drawAnimation(g, x, y - height, 0);
     }
 
-    void hit(double angle) {
+    public void hit(double angle) {
         knockback = true;
         knockbackTimer = 0;
         knockbackAngle = angle;
     }
 
-    int getHeight() {
+    public int getHeight() {
         return height;
     }
 

@@ -9,10 +9,11 @@ import java.awt.image.BufferedImage;
 
 public class Slime extends Entity {
     private final int maxHealth = 5;
-    private int height, jumpTimer, flashTimer, knockbackTimer, health = maxHealth, KBMultiplier;
+    private int height, jumpTimer, flashTimer, knockbackTimer, health = maxHealth;
+    private float KBMultiplier;
     private float scaleTime;
     private double sinCount, knockbackAngle, angle;
-    private boolean jumping, flash, knockback;
+    private boolean jumping, flash, knockback, dead;
     private static final BufferedImage[] slimeFrames = Loader.cutSpriteSheet("slime", 3, 1, Room.imageMult, 16, 16);
     private static final BufferedImage flashImg = Loader.colorImage(slimeFrames[2], Color.white), redImg = Loader.colorImage(slimeFrames[0], Color.red);
 
@@ -46,13 +47,14 @@ public class Slime extends Entity {
                     shadowMultiplier = (float) (-0.3 * Math.sin(sinCount) + 1);
                     height = (int) (Math.sin(sinCount) * 50);
                 } else {
+                    dead = true;
                     Main.room.enemies.remove(this);
                     Main.room.objects.remove(this);
-                    Main.room.addParticle(x, y, 6, 20, .5f, 2f, .5f, 3, 1, true, false, knockbackAngle, Math.PI / 2);
+                    Main.room.addParticle(x, y, 6, 20, .5f, 2f, .5f, 3, 1, true, false, false, knockbackAngle, Math.PI / 2);
                 }
             } else {
-                xVel = (int) (Math.sin(knockbackAngle) * 6);
-                yVel = (int) (Math.cos(knockbackAngle) * 6);
+                xVel = (int) (Math.sin(knockbackAngle) * 5 * KBMultiplier);
+                yVel = (int) (Math.cos(knockbackAngle) * 5 * KBMultiplier);
             }
             if (knockbackTimer >= (health <= 0 ? 40 : 15)) {
                 knockback = false;
@@ -82,14 +84,14 @@ public class Slime extends Entity {
             yVel = 0;
             xScale = Loader.lerp(xScale, 1, .5f);
             yScale = Loader.lerp(yScale, 1, .5f);
-            if (jumpTimer > 120) {
+            if (jumpTimer > 60) {
                 xScale = 1;
                 yScale = 1;
                 scaleTime = 0;
                 jumping = true;
                 img = slimeFrames[1];
                 jumpTimer = 0;
-            } else if (jumpTimer > 100) {
+            } else if (jumpTimer > 40) {
                 xScale = Loader.lerp(1, 1.3f, scaleTime);
                 yScale = Loader.lerp(1, 1 / 1.3f, scaleTime);
                 if (scaleTime < 1) {
@@ -104,10 +106,11 @@ public class Slime extends Entity {
         y += yVel;
     }
 
-    void hit(double angle, int damage, int mult) {
+    public void hit(double angle, int damage, float mult) {
         xScale = 1/1.3f;
         yScale = 1.3f;
         jumpTimer = 0;
+        scaleTime = 0;
         health -= damage;
         KBMultiplier = mult;
         flash = true;
@@ -132,7 +135,11 @@ public class Slime extends Entity {
         return new Rectangle(x, y, img.getWidth(), img.getHeight());
     }
 
-    int getHeight() {
+    public int getHeight() {
         return height;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 }

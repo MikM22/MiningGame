@@ -2,10 +2,12 @@ package com.company;
 
 import com.company.gameObjects.GameObject;
 import com.company.rendering.Animation;
+import com.company.rendering.Display;
 import com.company.rendering.PlayerAnimation;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -88,6 +90,14 @@ public class Loader {
         g.setTransform(old);
     }
 
+    public static void renderRotatedScaledImageCenter(Graphics2D g, AffineTransform old, int x, int y, GameObject obj, BufferedImage img, double angle, int rx, int ry) {
+        g.rotate(angle, rx, ry);
+        g.translate(-obj.getBounds().width * (obj.getxScale() - 1) / 2f, -obj.getBounds().height * (obj.getyScale() - 1) / 2f);
+        g.scale(obj.getxScale(), obj.getyScale());
+        g.drawImage(img, (int)(x / obj.getxScale()), (int) (y / obj.getyScale()), null);
+        g.setTransform(old);
+    }
+
     public static void renderRotatedAnimation(Graphics2D g, AffineTransform old, double angle, int x, int y, Animation anim, int imgX, int imgY) {
         g.rotate(angle, x, y);
         anim.drawAnimation(g, imgX, imgY, 0);
@@ -95,11 +105,11 @@ public class Loader {
     }
 
     public static void renderRotatedScaledAnimation(Graphics2D g, AffineTransform old, double angle, int x, int y, Animation anim, int imgX, int imgY) {
-        final Rectangle getBounds = new Rectangle(x + 30, y - 20, 32 * 5, 20 * 5);
+        Rectangle getBounds = new Rectangle(x, y, 32 * 5,32 * 5);
         g.rotate(angle, x, y);
         g.translate(-getBounds.width * (anim.getxScale() - 1) / 2f, -getBounds.height * (anim.getyScale() - 1) / 2f);
         g.scale(anim.getxScale(), anim.getyScale());
-        anim.drawAnimation(g, (int)(imgX / anim.getxScale()), (int) (imgY / anim.getyScale() - getBounds.height * (anim.getyScale() - 1)), 0);
+        anim.drawAnimation(g, anim.getxScale() <= 1 ? (int)(imgX / anim.getxScale() + getBounds.width * (anim.getxScale() - 1)) : (int)(imgX / anim.getxScale() + getBounds.width * Math.cbrt(anim.getxScale() - 1) / 4f), anim.getyScale() <= 1 ? (int)(imgY / anim.getyScale() + getBounds.height * (anim.getyScale() - 1)) : (int)(imgY / anim.getyScale() + getBounds.height * Math.cbrt(anim.getyScale() - 1) / 4f), 0);
         g.setTransform(old);
     }
 

@@ -43,7 +43,7 @@ public class PlayerAnimation {
             current = animations.get(1);
             if (particleTime > maxParticleTime) {
                 particleTime = 0;
-                Main.room.addParticle(player.getCx(), player.getCy() + player.getBounds().height / 2, 3, 5, .3f, .6f, 0, 0, 4, false, false, 0, 0);
+                Main.room.addParticle(player.getCx(), player.getCy() + player.getBounds().height / 2, 3, 5, .3f, .6f, 0, 0, 4, false, false, false, 0, 0);
             }
             particleTime++;
         }

@@ -35,9 +35,12 @@ public class Main extends Canvas implements Runnable {
     public static Player player;
     private boolean fullscreen;
     private final BufferedImage[] tiles = new BufferedImage[90];
-    public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 3, 1, Room.imageMult, 8, 8), items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, Room.imageMult, 16, 16);
-    private Weapon test = new Weapon(items[1], 2, .5f, 17, 5, 5);
-    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 17, 5, 5, 10, 10);
+    public static final int roomsIveCompleted = 1;
+    public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 5, 1, Room.imageMult, 8, 8), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, 2, 16, 16);
+    private static final BufferedImage[] items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16);
+    private Weapon test = new Weapon(items[1], 2f, .5f, 1, 5, 5);
+    private Weapon og = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
+    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 25, 1, 10, 10);
 
     //optimization idea: pass in the Affinetransform old instead of setting it so much
 
@@ -54,26 +57,29 @@ public class Main extends Canvas implements Runnable {
         tiles[84] = Loader.loadImage("wiztower", Room.imageMult);
         tiles[85] = Loader.loadImage("stall", Room.imageMult);
         rooms.add(new Room(25, 20));
-        for (int i = 0; i < copyRooms.length; i++) {
+        for (int i = 0; i < 2; i++) {
             copyRooms[i] = new Room(25, 20);
         }
+//        copyRooms[2] = new Room(40, 35);
+//        copyRooms[3] = new Room(25, 20);
+//        copyRooms[4] = new Room(25, 20);
         window = new Display(1000, 800, this);
         room = new Room(0, 0);
-        player = new Player(400, Display.height / 2);
+        player = new Player(1100, 300);
         //Player lol = new Player(350, Display.height / 2);
         camera = new Camera();
         ui = new UI(this);
         Room.player = player;
 //        for (int i = 0; i < 1000; i++) {
-//            copyRooms[0].addEnemy(new Enemy(Loader.randomInt(0, Display.width), Loader.randomInt(0, Display.height)));
+//            rooms.get(0).addEnemy(new Slime(Loader.randomInt(0, 20), Loader.randomInt(0, 20)));
 //        }
 
         loadRoom(rooms.get(0), "48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83f48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81f48f48f48f48f48,81f48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83f48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr");
         rooms.get(0).addChicken(new Chicken(8, 8));
         rooms.get(0).objects.add(player);
-        //rooms.get(0).addArt(new Tile(5, 1, tiles[31]));
         rooms.get(0).addDoor(new Door(5, 1));
         rooms.get(0).addChicken(new Chicken(5, 8));
+        rooms.get(0).addEnemy(new Slime(5, 9));
 
 
         copyRooms[0].objects.add(player);
@@ -84,8 +90,11 @@ public class Main extends Canvas implements Runnable {
         loadRoom(copyRooms[1], "29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f35f8f9f10f11f30f29f29f29f29f29f29f29f29f29f35f8f9f10f11f30f29f29f29f29f35f36f12f13f14f15f31f30f29f29f29f29f29f29f29f35f36f12f13f14f15f31f8f9f10f11f36f37w16w17w18w19w32w31f30f29f29f29f29f29f29f36f37w16w17w18w19w32w12f13f14f15w37w0,38w0,20f0,21f0,22f0,23f0,33w32w31f30f29f29f29f29f29f37w0,38w0,20f0,21f0,22f0,23f0,33w16w17w18w19w0,38w0,39f0p0p0p0p0,34f0,33w32w31f29f29f29f29f29w0,38w0,39f0p0p0p0p0,34f0,20f0,21f0,22f0,23f0,39f0p0p0p0p0p0p0,34f0,33w32w29f29f29f29f29w0,39f0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,34f0,33w29w29f29f29frr3w0,rr26p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,34f29w29f29f29frr6w0,rr27p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,26p3w29f29f29frr5w0,rr26p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,27p4w29f29f29frr4w0,rr25p0p0p0p0p0p0p0p0p0p0f0p0p0p0p0p0p0p0p0p0,26p5w29f29f29frr3w0,rr24p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,27p6w29f29f29f29w0,r47f0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,26p3w29f29f29f29w29w0,r47f0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,27p4w29f29f29f29f29w29w0,r47f0,r27p0,r26p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,26p5w29f29f29f29f29f29w29wr4wr3w0,r47f0p0p0p0p0p0p0p0p0p0p0p0p0p0p0,27p6w29f29f29f29f29f29f29f29f29w29w0,r47f0p0p0p0p0p0p0p0p0p0p0p0p0p0,26p3w29f29f29f29f29f29f29f29f29f29wrr4w0,x27p0p0p0p0p0p0p0p0p0p0p0p0p0,47f29w29f29f29f29f29f29f29f29f29f29frr3w0,rr28p0,r26p0,r27p0,r26p0,r27p0,r26p0,r26p0,r26p0,r27p0,r26p0,r27p0,r24p0,47f29w29w29f29f29f29f29f29f29f29f29f29f29wr6wr5wr4wr3wr6wr5wr4wr3wr6wr5wr4wr3w29w29w29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f");
         copyRooms[1].addDoor(new Door(5, 5));
 
-        rooms.add(new Room(copyRooms[Loader.randomInt(0,1)]));
-//        rooms.add(new Room(copyRooms[Loader.randomInt(0,1)]));
+//        copyRooms[2].objects.add(player);
+//        loadRoom(copyRooms[2], "29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0,rr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0,47fr3fr4fr5fr6f0,r47f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0,47f29f29f29f29f29f29f0,r47f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0,47f29f29f29f29f29f29f29f29f0,r47f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0,47f29f29f29f29f29f29f29f29f29f29f0,r47f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f3f29f29f29f29f29f29f29f29f29f29fx3f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f4f29f29f29f29f29f29f29f29f29f29fx4f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f5f29f29f29f29f29f29f29f29f29f29fx5f0f0f0f0f29f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f6f29f29f29f29f29f29f29f29f29f29fx6f0f0f0f0frrr47f29f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f30f29f29f29f29f29f29f29f29f29f29f35f0f0f0f0f0frrr47f29f29f29f29f29f29f29f29f29f29f29f29f29f29f0f0f0f0f29f0f0f0f0f31f30f29f29f29f29f29f29f29f29f35f36f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f30f0f0f0f29f0f0f0f0f32f31f30f29f29f29f29f29f29f35f36f37f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f30f0f0f29f0f0f0f0f0,33f32f31f30f29f29f29f29f35f36f37f0,38f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f29f0f0f0f0f0,34f0,33f32f31f8f9f10f11f36f37f0,38f0,39f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f29f0f0f0f0f0f0,34f0,33f32f12f13f14f15f37f0,38f0,39f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f29f0f0f0f0f0f0f0,34f0,33f16f17f18f19f0,38f0,39f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f29f0f0f0f0f0f0f0f0,34f0,20f0,21f0,22f0,23f0,39f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0fr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0fr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29f29fr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0fr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0fr47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0fr47f0f0f0f0f0f0f0f0f0f0f0f0f47f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f29f29f29f29f29f29f29f29f29f29f29f29f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f");
+//        copyRooms[2].addDoor(new Door(5, 5));
+
+        rooms.add(new Room(copyRooms[Loader.randomInt(0,roomsIveCompleted)]));
 
         room = rooms.get(0);
 
@@ -101,10 +110,7 @@ public class Main extends Canvas implements Runnable {
                     System.out.println("fps: " + fps + " ticks: " + tps);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_H) {
-                    Main.player.hp -= 5;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_P) {
-                    Main.player.hpUpgrades++;
+                    Main.player.mp -= 5;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
                     fullscreen = !fullscreen;
@@ -170,7 +176,7 @@ public class Main extends Canvas implements Runnable {
                 smokeTimer = 0;
                 smokeTimerMax = Loader.randomInt(20, 40);
                 for (Point p : chimneyPoints) {
-                    rooms.get(0).addParticle(p.x * Room.tw + 10, p.y * Room.tw + 5, 2, 4, 1, 1.5f, 1f, 1.5f, 4, true, false, Math.PI, .2);
+                    rooms.get(0).addParticle(p.x * Room.tw + 10, p.y * Room.tw + 5, 2, 4, 1, 1.5f, 1f, 1.5f, 4, true, false, false, Math.PI, .2);
                 }
             }
         }
@@ -184,6 +190,7 @@ public class Main extends Canvas implements Runnable {
         }
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         Display.mousePos = new Point(MouseInfo.getPointerInfo().getLocation().x - window.frame.getLocationOnScreen().x + camera.x - 8, MouseInfo.getPointerInfo().getLocation().y - window.frame.getLocationOnScreen().y + camera.y - 31);
+        Display.mouseRect = new Rectangle(Display.mousePos.x - camera.x, Display.mousePos.y - camera.y, 1, 1);
         AffineTransform old = g.getTransform();
         //DRAW THINGS HERE//
         g.setColor(new Color(20, 19, 39));
@@ -241,7 +248,7 @@ public class Main extends Canvas implements Runnable {
         int numRotations = 0;
         int xPos = 0, yPos = 0;
         ArrayList<Tile> bigTiles = new ArrayList<>();
-        Weapon[] shop = new Weapon[]{test, rangeTest, null};
+        Weapon[] shop = new Weapon[]{test, rangeTest, og};
         int tileNum = 0;
 
         for (int x = 0; x < s.length() ; x++) {

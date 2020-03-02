@@ -16,8 +16,11 @@ import static com.company.rendering.Display.*;
 public class UI {
     public static Font pixel, compass, equipment, expression, futile, matchup, bigMatchup;
     private BufferedImage[] hpBar = Loader.cutSpriteSheet("hpBar", 1, 3, Room.imageMult, 16, 16);
+    private BufferedImage[] hpMana = Loader.cutSpriteSheet("health", 3, 2, Room.imageMult, 16, 80);
     private BufferedImage goldIcon = Loader.loadImage("goldIcon", Room.imageMult), goldBG = Loader.loadImage("goldBG", Room.imageMult);
-    private Color red = new Color(182, 18, 14), blue = new Color(45, 7, 191), gold = new Color(232, 170, 53);
+    private Rectangle hpRect = new Rectangle(17, height - 5 - Room.tw * 6, 24, 240), mpRect = new Rectangle(46, height - 5 - Room.tw * 6, 24, 240);
+    private Color gold = new Color(232, 170, 53);
+    private HpAnimation hpAnim, mpAnim;
     public static String goldString = "0";
     private static int timer;
     private static boolean transitioning;
@@ -32,6 +35,9 @@ public class UI {
         matchup = loadFont("MatchupPro", Font.PLAIN, 50);
         bigMatchup = loadFont("MatchupPro", Font.PLAIN, 60);
         fm = new Canvas().getFontMetrics(matchup);
+
+        hpAnim = new HpAnimation(7, new BufferedImage[]{hpMana[0], hpMana[1], hpMana[2]});
+        mpAnim = new HpAnimation(7, new BufferedImage[]{hpMana[3], hpMana[4], hpMana[5]});
         main.mouseAdapter = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 Display.mouseDown = true;
@@ -50,6 +56,8 @@ public class UI {
                 transitioning = false;
             }
         }
+        hpAnim.repeatAnimation();
+        mpAnim.repeatAnimation();
     }
 
     public void render(Graphics2D g) {
@@ -64,30 +72,39 @@ public class UI {
         g.drawImage(hpBar[2], gap, height - gap - Room.tw * 2, null);
         g.drawImage(hpBar[2], 2 * gap + 24, height - gap  - Room.tw * 2, null);
         int h, m;
-        for (h = 0; h < Main.player.hpUpgrades + 2; h++) {
+        for (h = 0; h < 3; h++) {
             g.drawImage(hpBar[1], gap, height - gap - Room.tw * (h+3), null);
         }
-        for (m = 0; m < Main.player.manaUpgrades + 2; m++) {
+        for (m = 0; m < 3; m++) {
             g.drawImage(hpBar[1], 2 * gap + 24, height - gap - Room.tw * (m+3), null);
         }
-        g.drawImage(hpBar[0], gap, height - gap - Room.tw * (h+3), null);
-        g.drawImage(hpBar[0], 2 * gap + 24, height - gap  - Room.tw * (m+3), null);
-        g.setColor(red);
-        int hpBarHeight = (gap - Room.tw * (h+3) + 5);
-        g.fillRect(gap + 18, height + (int)((float)Main.player.hp / Main.player.maxHP * hpBarHeight), 12, (75 + 48 * h) + (hpBarHeight - (int)((float)Main.player.hp / Main.player.maxHP * hpBarHeight)));
-        g.setColor(blue);
-        int mpBarHeight = (gap - Room.tw * (m+3) + 5);
-        g.fillRect(2 * gap + 42, height + (int)((float)Main.player.mp / Main.player.maxMP * mpBarHeight), 12, (75 + 48 * m) + (mpBarHeight - (int)((float)Main.player.mp / Main.player.maxMP * mpBarHeight)));
+        g.drawImage(hpBar[0], gap, height - gap - Room.tw * 6, null);
+        g.drawImage(hpBar[0], 2 * gap + 24, height - gap  - Room.tw * 6, null);
+        hpAnim.drawCroppedAnimation(g, gap, height - gap - Room.tw * 6 + 231, (int)((float)Main.player.hp / Main.player.maxHP * 77));
+        mpAnim.drawCroppedAnimation(g, 2 * gap + 24, height - gap - Room.tw * 6 + 231, (int)((float)Main.player.mp / Main.player.maxMP * 77));
+        //draw gold
         g.drawImage(goldBG, 3 * gap + 61, height - gap - Room.tw * 2, null);
         g.drawImage(goldIcon, 3 * gap + 64, height - gap - Room.tw * 2, null);
         g.setFont(matchup);
         g.setColor(gold);
         g.drawString(goldString, 4 * gap + 176 - fm.stringWidth(goldString), height - gap - 60);
+        if (mouseRect.intersects(hpRect)) {
+            g.setColor(Color.white);
+            g.drawString(Main.player.hp + "/" + Main.player.maxHP, mouseRect.x + 16, mouseRect.y);
+        }
+        if (mouseRect.intersects(mpRect)) {
+            g.setColor(Color.white);
+            g.drawString(Main.player.mp + "/" + Main.player.maxMP, mouseRect.x + 16, mouseRect.y);
+        }
     }
 
     public static void doRoomTransition() {
         transitioning = true;
         timer = 0;
+    }
+
+    public static void doHPAnim() {
+
     }
 
     //java -jar E:\IntelliJprojects\Arctown\out\artifacts\Arctown_jar\Arctown.jar

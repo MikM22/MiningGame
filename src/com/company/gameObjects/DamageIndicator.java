@@ -12,7 +12,7 @@ public class DamageIndicator extends GameObject {
     private int time;
     private float y, acceleration = 5;
 
-    DamageIndicator(int x, int y, boolean gold) {
+    public DamageIndicator(int x, int y, boolean gold) {
         super(x, y);
         this.y = y;
         if (gold) {

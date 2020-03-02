@@ -20,14 +20,13 @@ public class Weapon {
         this.KBMultiplier = KBMultiplier;
     }
 
-    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int KBMultiplier, int range, int speed) {
+    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int range, int speed) {
         type = 2;
         this.img = img;
         imgFlipped = Loader.flipped(img, true);
         this.projectileImg = projectileImg;
         this.attackTime = attackTime;
         this.damage = damage;
-        this.KBMultiplier = KBMultiplier;
         this.range = range;
         this.speed = speed;
     }

@@ -124,26 +124,26 @@ public class Room {
         frontArt.add(itemSpot);
     }
 
-    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, double angle, double coneRadians) {
+    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
             }
         }
     }
 
-    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean gravity, boolean shadow, boolean randomAngle, boolean front, double angle, BufferedImage img) {
+    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean gravity, boolean shadow, boolean randomAngle, boolean front, double angle, double coneRadians, BufferedImage img) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-Math.PI / 2, Math.PI / 2), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-Math.PI / 2, Math.PI / 2), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
             }
         }
     }

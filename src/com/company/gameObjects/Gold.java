@@ -42,7 +42,7 @@ public class Gold extends GameObject {
             if (getBounds().intersects(Main.player.getIntersectionBounds())) {
                 Main.player.gold++;
                 Main.room.objects.add(new DamageIndicator(x, y, true));
-                Main.room.addParticle(x, y, 4, 10, .4f, .7f, 0, 0, 4, false, false, false, false, true, 0, Main.particles[2]);
+                Main.room.addParticle(x, y, 4, 10, .4f, .7f, 0, 0, 4, false, false, false, false, true, 0, 0, Main.particles[2]);
                 Main.room.objects.remove(this);
                 if (Main.player.gold < 1000) {
                     UI.goldString = "" + Main.player.gold;

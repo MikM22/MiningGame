@@ -20,6 +20,7 @@ public class Room {
     public int mapX, mapY;
 
     public ArrayList<GameObject> objects = new ArrayList<>();
+    public ArrayList<GameObject> frontObjects = new ArrayList<>();
     public ArrayList<GameArt> art = new ArrayList<>();
     public ArrayList<GameArt> frontArt = new ArrayList<>();
     public ArrayList<Slime> enemies = new ArrayList<>();
@@ -58,6 +59,10 @@ public class Room {
         for (GameObject gameObject : objectsThisTick) {
             gameObject.tick();
         }
+        ArrayList<GameObject> frontObjectsThisTick = new ArrayList<>(frontObjects);
+        for (GameObject gameObject : frontObjectsThisTick) {
+            gameObject.tick();
+        }
     }
 
     void render(Graphics2D g) {
@@ -75,6 +80,9 @@ public class Room {
         }
         for (GameArt art : frontArt) {
             art.render(g);
+        }
+        for (GameObject obj : frontObjects) {
+            obj.render(g);
         }
     }
 
@@ -128,11 +136,11 @@ public class Room {
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, true));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, false));
             }
         }
     }
@@ -140,11 +148,11 @@ public class Room {
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean gravity, boolean shadow, boolean randomAngle, boolean front, double angle, double coneRadians, BufferedImage img) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, true, img));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, false, img));
             }
         }
     }

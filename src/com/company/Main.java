@@ -74,7 +74,7 @@ public class Main extends Canvas implements Runnable {
 //            rooms.get(0).addEnemy(new Slime(Loader.randomInt(0, 20), Loader.randomInt(0, 20)));
 //        }
 
-        loadRoom(rooms.get(0), "48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83f48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81f48f48f48f48f48,81f48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83f48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr");
+        loadRoom(rooms.get(0), "48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83b48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85b48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83b48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81b48f48f48f48f48,81b48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83b48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr");
         rooms.get(0).addChicken(new Chicken(8, 8));
         rooms.get(0).objects.add(player);
         rooms.get(0).addDoor(new Door(5, 1));
@@ -175,7 +175,7 @@ public class Main extends Canvas implements Runnable {
                 smokeTimer = 0;
                 smokeTimerMax = Loader.randomInt(20, 40);
                 for (Point p : chimneyPoints) {
-                    rooms.get(0).addParticle(p.x * Room.tw + 10, p.y * Room.tw + 5, 2, 4, 1, 1.5f, 1f, 1.5f, 4, true, false, false, Math.PI, .2);
+                    rooms.get(0).addParticle(p.x * Room.tw + 10, p.y * Room.tw + 5, 2, 4, 1, 1.5f, 1f, 1.5f, 4, true, true, false, Math.PI, .2);
                 }
             }
         }
@@ -210,7 +210,7 @@ public class Main extends Canvas implements Runnable {
         this.requestFocus();
         long lastTime = System.nanoTime();
         double ns = 1000000000 / 60d;
-        double nsRender = 1000000000 / 144d;
+        double nsRender = 1000000000 / 60d;
         double delta = 0;
         double renderDelta = 0;
         long timer = System.currentTimeMillis();
@@ -305,11 +305,10 @@ public class Main extends Canvas implements Runnable {
                         room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     }
                 } else if (s.charAt(x) == 'b') {
-                    if (flip) {
-                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
-                    } else {
-                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
-                    }
+                    if (flip)
+                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
+                    else
+                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                 } else if (s.charAt(x) == 'i') {
                     room1.addWall(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     room1.addItemSpot(new ItemSpot(xPos, yPos, shop[tileNum]));

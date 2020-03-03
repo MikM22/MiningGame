@@ -73,6 +73,8 @@ public class Projectile extends GameObject {
 
     public void render(Graphics2D g) {
         Loader.renderRotatedImage(g, g.getTransform(), angle + 3 * Math.PI / 4, (int)x, (int)y, img, (int)x, (int)y);
+        g.setColor(Color.red);
+        g.fill(getRotatedBounds());
     }
 
     public Rectangle getBounds() {
@@ -109,7 +111,7 @@ public class Projectile extends GameObject {
                 enemyToFollow = slime;
             }
         }
-        if (x < 0 || x > Main.room.mapX || y < 0 || y > Main.room.mapY) {
+        if (x < 0 || x > Main.room.mapX + 48 || y < 0 || y > Main.room.mapY + 48) {
             intersect();
         }
     }

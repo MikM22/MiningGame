@@ -7,7 +7,6 @@ import com.company.Room;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -25,6 +24,10 @@ public class UI {
     private static int timer;
     private static boolean transitioning;
     private FontMetrics fm;
+    private int hpBounce;
+    private double hpSinCount;
+    private static boolean hpBouncing;
+    private static int damage;
 
     public UI(Main main) {
         pixel = loadFont("PixelFJVerdana12pt", Font.BOLD, 20);
@@ -56,6 +59,15 @@ public class UI {
                 transitioning = false;
             }
         }
+        if (hpBouncing) {
+            hpSinCount += .6f;
+            hpBounce = (int) (Math.sin(hpSinCount) * 50 * ((float)damage / Main.player.maxHP));
+            if (hpSinCount >= Math.PI) {
+                hpSinCount = 0;
+                hpBounce = 0;
+                hpBouncing = false;
+            }
+        }
         hpAnim.repeatAnimation();
         mpAnim.repeatAnimation();
     }
@@ -69,18 +81,18 @@ public class UI {
         }
         //draw hpBars, gold
         final int gap = 5;
-        g.drawImage(hpBar[2], gap, height - gap - Room.tw * 2, null);
+        g.drawImage(hpBar[2], gap, height - gap - Room.tw * 2 - hpBounce, null);
         g.drawImage(hpBar[2], 2 * gap + 24, height - gap  - Room.tw * 2, null);
         int h, m;
         for (h = 0; h < 3; h++) {
-            g.drawImage(hpBar[1], gap, height - gap - Room.tw * (h+3), null);
+            g.drawImage(hpBar[1], gap, height - gap - Room.tw * (h+3) - hpBounce, null);
         }
         for (m = 0; m < 3; m++) {
             g.drawImage(hpBar[1], 2 * gap + 24, height - gap - Room.tw * (m+3), null);
         }
-        g.drawImage(hpBar[0], gap, height - gap - Room.tw * 6, null);
+        g.drawImage(hpBar[0], gap, height - gap - Room.tw * 6 - hpBounce, null);
         g.drawImage(hpBar[0], 2 * gap + 24, height - gap  - Room.tw * 6, null);
-        hpAnim.drawCroppedAnimation(g, gap, height - gap - Room.tw * 6 + 231, (int)((float)Main.player.hp / Main.player.maxHP * 77));
+        hpAnim.drawCroppedAnimation(g, gap, height - gap - Room.tw * 6 + 231 - hpBounce, (int)((float)Main.player.hp / Main.player.maxHP * 77));
         mpAnim.drawCroppedAnimation(g, 2 * gap + 24, height - gap - Room.tw * 6 + 231, (int)((float)Main.player.mp / Main.player.maxMP * 77));
         //draw gold
         g.drawImage(goldBG, 3 * gap + 61, height - gap - Room.tw * 2, null);
@@ -103,8 +115,9 @@ public class UI {
         timer = 0;
     }
 
-    public static void doHPAnim() {
-
+    public static void doHPAnim(int inDamage) {
+        hpBouncing = true;
+        damage = inDamage;
     }
 
     //java -jar E:\IntelliJprojects\Arctown\out\artifacts\Arctown_jar\Arctown.jar
@@ -114,10 +127,10 @@ public class UI {
         Font font = null;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(style, size);
-            /*
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(pixelFont);
-             */
+           /*
+           GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+           ge.registerFont(pixelFont);
+            */
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }

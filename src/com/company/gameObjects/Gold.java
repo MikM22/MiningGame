@@ -9,8 +9,6 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
-import static com.company.rendering.Display.height;
-
 public class Gold extends GameObject {
     private static BufferedImage img = Loader.loadImage("gold", Room.imageMult);
     private double angle;
@@ -39,7 +37,7 @@ public class Gold extends GameObject {
             yVel = (int) (Math.sin(angle) * spd);
             x += xVel;
             y += yVel;
-            if (getBounds().intersects(Main.player.getIntersectionBounds())) {
+            if (getBounds().intersects(Main.player.getPartialBounds())) {
                 Main.player.gold++;
                 Main.room.objects.add(new DamageIndicator(x, y, true));
                 Main.room.addParticle(x, y, 4, 10, .4f, .7f, 0, 0, 4, false, false, false, false, true, 0, 0, Main.particles[2]);

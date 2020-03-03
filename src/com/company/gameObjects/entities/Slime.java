@@ -3,11 +3,13 @@ package com.company.gameObjects.entities;
 import com.company.Loader;
 import com.company.Main;
 import com.company.Room;
+import com.company.gameObjects.Gold;
+import com.company.gameObjects.entities.enemies.Enemy;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Slime extends Entity {
+public class Slime extends Enemy {
     private final int maxHealth = 5;
     private int height, jumpTimer, flashTimer, knockbackTimer, health = maxHealth;
     private float KBMultiplier;
@@ -22,8 +24,17 @@ public class Slime extends Entity {
         img = slimeFrames[0];
     }
 
+    protected int getDamage() {
+        return 5;
+    }
+
+    protected int getDamageInterval() {
+        return 120;
+    }
+
     public void tick() {
         checkCollision();
+        checkPlayerCollision();
         if (flash) {
             if (health <= 0) {
                 img = redImg;
@@ -50,6 +61,7 @@ public class Slime extends Entity {
                     dead = true;
                     Main.room.enemies.remove(this);
                     Main.room.objects.remove(this);
+                    Main.room.addGold(x, y, Loader.randomInt(3, 6));
                     Main.room.addParticle(x, y, 6, 20, .5f, 2f, .5f, 3, 1, true, false, false, knockbackAngle, Math.PI / 2);
                 }
             } else {

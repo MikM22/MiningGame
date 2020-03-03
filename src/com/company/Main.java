@@ -110,7 +110,8 @@ public class Main extends Canvas implements Runnable {
                     System.out.println("fps: " + fps + " ticks: " + tps);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_H) {
-                    Main.player.mp -= 5;
+                    Main.player.hp -= 5;
+                    UI.doHPAnim(5);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
                     fullscreen = !fullscreen;
@@ -118,7 +119,7 @@ public class Main extends Canvas implements Runnable {
                 }
                 if (e.getKeyCode() == KeyEvent.VK_E) {
                     for (ItemSpot itemSpot : room.itemSpots) {
-                        if (player.getIntersectionBounds().intersects(itemSpot.getBounds())) {
+                        if (player.getPartialBounds().intersects(itemSpot.getBounds())) {
                             player.setWeapon(itemSpot.weapon);
                             break;
                         }
@@ -128,9 +129,7 @@ public class Main extends Canvas implements Runnable {
                     player.swordSlice.setSpeed(100);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_G) {
-                    for (int i = 0; i < 1000; i++) {
-                        Main.room.addGold(7, 7);
-                    }
+                    Main.room.addGold(7 * 48, 7 * 48, 1000);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_Q) {
                     if (player.state == 0) {

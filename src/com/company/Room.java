@@ -110,8 +110,9 @@ public class Room {
         art.add(obj);
     }
 
-    public void addGold(int x, int y) {
-        objects.add(new Gold(x * tw + Loader.randomInt(-50, 50), y * tw + Loader.randomInt(-50, 50)));
+    public void addGold(int x, int y, int num) {
+        for (int i = 0; i < num; i++)
+            objects.add(new Gold(x + Loader.randomInt(-50, 50), y + Loader.randomInt(-50, 50)));
     }
 
     public void addChicken(Chicken chicken) {

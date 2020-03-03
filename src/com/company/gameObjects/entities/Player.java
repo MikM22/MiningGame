@@ -49,7 +49,7 @@ public class Player extends Entity {
         yVel = Display.verticalAxis() * spd;
         checkCollision();
         for (Door door : Main.room.doors) {
-            if (getIntersectionBounds().intersects(door.getBounds())) {
+            if (getPartialBounds().intersects(door.getBounds())) {
                 Main.onFirstFloor = false;
                 Main.roomNum++;
                 x = (Main.room.xTiles + 1) / 2 * Room.tw;
@@ -228,6 +228,10 @@ public class Player extends Entity {
         }
     }
 
+    public void hit(int damage) {
+        hp -= damage;
+    }
+
     public void setWeapon(Weapon weapon) {
         currentWeapon = weapon;
         state = weapon.type;
@@ -236,11 +240,11 @@ public class Player extends Entity {
     }
 
     public Rectangle getOffsetBoundsH() {
-        return new Rectangle((int)(x + xVel), y, getIntersectionBounds().width, getIntersectionBounds().height);
+        return new Rectangle((int)(x + xVel), y, getPartialBounds().width, getPartialBounds().height);
     }
 
     public Rectangle getOffsetBoundsV() {
-        return new Rectangle(x, (int)(y + yVel), getIntersectionBounds().width, getIntersectionBounds().height);
+        return new Rectangle(x, (int)(y + yVel), getPartialBounds().width, getPartialBounds().height);
     }
 
     private Area getSliceBounds() {
@@ -254,7 +258,7 @@ public class Player extends Entity {
         return swordSlice.isRunning();
     }
 
-    public Rectangle getIntersectionBounds() {
+    public Rectangle getPartialBounds() {
         return new Rectangle(x, y + 20, img.getWidth(), 40);
     }
 

@@ -2,6 +2,7 @@ package com.company.gameObjects.entities.enemies;
 
 import com.company.Main;
 import com.company.gameObjects.entities.Entity;
+import com.company.rendering.UI;
 
 public abstract class Enemy extends Entity {
     private int timer = getDamageInterval();
@@ -23,7 +24,10 @@ public abstract class Enemy extends Entity {
             }
             timer++;
             if (timer > getDamageInterval()) {
-                Main.player.hit(getDamage());
+                if (!leftPlayer) {
+                    Main.player.hit(getDamage());
+                    UI.doHPAnim(getDamage());
+                }
                 leftPlayer = false;
                 timer = 0;
             }

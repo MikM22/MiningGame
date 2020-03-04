@@ -60,6 +60,7 @@ public class Main extends Canvas implements Runnable {
         for (int i = 0; i < 2; i++) {
             copyRooms[i] = new Room(25, 20);
         }
+        //bruh
 //        copyRooms[2] = new Room(40, 35);
 //        copyRooms[3] = new Room(25, 20);
 //        copyRooms[4] = new Room(25, 20);

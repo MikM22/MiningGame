@@ -21,7 +21,7 @@ public class Player extends Entity {
     private float attackTime = 0;
     private int wx, wy, cx, cy;
     private final BufferedImage pickaxe = Loader.loadImage("pickaxe", Room.imageMult), pickaxeFlipped = Loader.flipped(pickaxe, true);
-    private final BufferedImage rock = Loader.loadImage("rock", Room.imageMult);
+    private final BufferedImage[] rocks = Loader.cutSpriteSheet("rocks", 3, 1, Room.imageMult, 16, 16);
     private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32), bowString = Loader.cutSpriteSheet("bowString", 4, 1, Room.imageMult, 16, 16);
     public final BufferedImage string = bowString[0];
     public final Animation swordSlice = new Animation(2, swordSliceImgs, false);
@@ -64,7 +64,7 @@ public class Player extends Entity {
                 for (int i = 0; i < room.rockSpots.size(); i++) {
                     Point p = room.rockSpots.get(i);
                     if (Math.random() * 100 < prob) {
-                        room.addRock(new Tile(p.x, p.y, rock));
+                        room.addRock(new Tile(p.x, p.y, rocks[Loader.randomInt(0, rocks.length - 1)]));
                         room.rockSpots.remove(p);
                         i--;
                     }

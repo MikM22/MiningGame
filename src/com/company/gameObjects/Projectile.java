@@ -73,8 +73,6 @@ public class Projectile extends GameObject {
 
     public void render(Graphics2D g) {
         Loader.renderRotatedImage(g, g.getTransform(), angle + 3 * Math.PI / 4, (int)x, (int)y, img, (int)x, (int)y);
-        g.setColor(Color.red);
-        g.fill(getRotatedBounds());
     }
 
     public Rectangle getBounds() {

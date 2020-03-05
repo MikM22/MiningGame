@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.gameArt.*;
 import com.company.gameObjects.Gold;
+import com.company.gameObjects.ZOrderTile;
 import com.company.gameObjects.entities.Chicken;
 import com.company.gameObjects.entities.Slime;
 import com.company.gameObjects.GameObject;
@@ -20,8 +21,10 @@ public class Room {
     public int mapX, mapY;
 
     public ArrayList<GameObject> objects = new ArrayList<>();
+    public ArrayList<GameObject> frontObjects = new ArrayList<>();
     public ArrayList<GameArt> art = new ArrayList<>();
     public ArrayList<GameArt> frontArt = new ArrayList<>();
+    public ArrayList<ZOrderTile> zOrderTiles = new ArrayList<>();
     public ArrayList<Slime> enemies = new ArrayList<>();
     public ArrayList<Point> rockSpots = new ArrayList<>();
     public ArrayList<Tile> walls = new ArrayList<>();
@@ -50,7 +53,7 @@ public class Room {
         rocks = new ArrayList<>(room.rocks);
         rockSpots = new ArrayList<>(room.rockSpots);
         frontArt = new ArrayList<>(room.frontArt);
-        //not carrying over itemSpots, chickens because room 0 never cloned
+        //not carrying over itemSpots, chickens, zOrderSwitchTiles because room 0 never cloned
     }
 
     void tick() {
@@ -58,11 +61,23 @@ public class Room {
         for (GameObject gameObject : objectsThisTick) {
             gameObject.tick();
         }
+        ArrayList<GameObject> frontObjectsThisTick = new ArrayList<>(frontObjects);
+        for (GameObject gameObject : frontObjectsThisTick) {
+            gameObject.tick();
+        }
+        for (GameObject gameObject : zOrderTiles) {
+            gameObject.tick();
+        }
     }
 
     void render(Graphics2D g) {
         for (GameArt art : art) {
             art.render(g);
+        }
+        for (ZOrderTile tile : zOrderTiles) {
+            if (!tile.drawInFront()) {
+                tile.render(g);
+            }
         }
         g.setColor(new Color(0, 0, 0, 60));
         for (GameObject obj : objects) {
@@ -75,6 +90,14 @@ public class Room {
         }
         for (GameArt art : frontArt) {
             art.render(g);
+        }
+        for (ZOrderTile tile : zOrderTiles) {
+            if (tile.drawInFront()) {
+                tile.render(g);
+            }
+        }
+        for (GameObject obj : frontObjects) {
+            obj.render(g);
         }
     }
 
@@ -128,11 +151,11 @@ public class Room {
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, true));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, false));
             }
         }
     }
@@ -140,11 +163,11 @@ public class Room {
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean gravity, boolean shadow, boolean randomAngle, boolean front, double angle, double coneRadians, BufferedImage img) {
         if (front) {
             for (int i = 0; i < num; i++) {
-                objects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, true, img));
             }
         } else {
             for (int i = 0; i < num; i++) {
-                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, img));
+                objects.add(0, new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, gravity, shadow, maxLifeTime, false, img));
             }
         }
     }

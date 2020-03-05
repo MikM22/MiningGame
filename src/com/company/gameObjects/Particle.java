@@ -10,17 +10,18 @@ public class Particle extends GameObject {
     private float rate, acceleration = 5;
     private int height;
     private double angle, speed;
-    private boolean particlesMove, gravity;
+    private boolean particlesMove, gravity, front;
     private BufferedImage particleImg;
     private double x, y;
 
-    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime) {
+    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime, boolean front) {
         super(0, 0);
         this.x = x;
         this.y = y;
         xScale = size;
         yScale = size;
         this.angle = angle;
+        this.front = front;
         this.speed = speed;
         this.particlesMove = particlesMove;
         this.gravity = false;
@@ -29,13 +30,14 @@ public class Particle extends GameObject {
         particleImg = Main.particles[0];
     }
 
-    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, boolean gravity, boolean shadow, float maxLifeTime, BufferedImage img) {
+    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, boolean gravity, boolean shadow, float maxLifeTime, boolean front, BufferedImage img) {
         super(0, 0);
         this.x = x;
         this.y = y;
         xScale = size;
         yScale = size;
         this.angle = angle;
+        this.front = front;
         this.speed = speed;
         this.particlesMove = particlesMove;
         this.gravity = gravity;
@@ -61,7 +63,11 @@ public class Particle extends GameObject {
         yScale -= rate;
         shadowMultiplier = xScale;
         if (xScale <= 0) {
-            Main.room.objects.remove(this);
+            if (front) {
+                Main.room.frontObjects.remove(this);
+            } else {
+                Main.room.objects.remove(this);
+            }
         }
     }
 

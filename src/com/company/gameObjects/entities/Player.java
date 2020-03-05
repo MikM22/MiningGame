@@ -180,7 +180,7 @@ public class Player extends Entity {
         }
         if (!mousePressed && !mouseDown) {
             if (state == 2) {
-                if (timeSinceLastBow > currentWeapon.attackTime) {
+                if (timeSinceLastBow > currentWeapon.attackTime && bowPower > 0) {
                     double angle = Math.PI / 2 - selectionAngle;
                     Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed * bowPower, currentWeapon.damage, bowPower, Main.projectiles[0]));
                     timeSinceLastBow = 0;

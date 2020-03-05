@@ -3,6 +3,7 @@ package com.company;
 import com.company.gameArt.Door;
 import com.company.gameArt.ItemSpot;
 import com.company.gameArt.Tile;
+import com.company.gameObjects.ZOrderTile;
 import com.company.gameObjects.entities.Chicken;
 import com.company.gameObjects.entities.Slime;
 import com.company.gameObjects.entities.Player;
@@ -34,13 +35,14 @@ public class Main extends Canvas implements Runnable {
     public MouseAdapter mouseAdapter;
     public static Player player;
     private boolean fullscreen;
-    private final BufferedImage[] tiles = new BufferedImage[90];
+    private final BufferedImage[] tiles = new BufferedImage[210];
     public static final int roomsIveCompleted = 1;
     public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 5, 1, Room.imageMult, 8, 8), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, 2, 16, 16);
     private static final BufferedImage[] items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16);
     private Weapon test = new Weapon(items[1], 2f, .5f, 1, 5, 5);
     private Weapon og = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
     private Weapon rangeTest = new Weapon(items[7], projectiles[0], 25, 1, 10, 10);
+    private Dimension[] tileSizes = new Dimension[5];
 
     //optimization idea: pass in the Affinetransform old instead of setting it so much
 
@@ -56,11 +58,27 @@ public class Main extends Canvas implements Runnable {
         tiles[83] = Loader.loadImage("tree", Room.imageMult);
         tiles[84] = Loader.loadImage("wiztower", Room.imageMult);
         tiles[85] = Loader.loadImage("stall", Room.imageMult);
+
+        int z = 0;
+        tileSizes[0] = new Dimension(4, 7);
+        tileSizes[1] = new Dimension(2, 4);
+        tileSizes[2] = new Dimension(3, 3);
+        tileSizes[3] = new Dimension(3, 8);
+        tileSizes[4] = new Dimension(5, 4);
+
+        for (int i = 0; i < tileSizes.length; i++) {
+            for (int x = 0; x < tileSizes[i].width; x++) {
+                for (int y = 0; y < tileSizes[i].height; y++) {
+                    tiles[120 + z] = tiles[81 + i].getSubimage(x * 48, y * 48, 48, 48);
+                    z++;
+                }
+            }
+        }
+
         rooms.add(new Room(25, 20));
         for (int i = 0; i < 2; i++) {
             copyRooms[i] = new Room(25, 20);
         }
-        //bruh
 //        copyRooms[2] = new Room(40, 35);
 //        copyRooms[3] = new Room(25, 20);
 //        copyRooms[4] = new Room(25, 20);
@@ -75,7 +93,9 @@ public class Main extends Canvas implements Runnable {
 //            rooms.get(0).addEnemy(new Slime(Loader.randomInt(0, 20), Loader.randomInt(0, 20)));
 //        }
 
-        loadRoom(rooms.get(0), "48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83b48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85b48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83b48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81b48f48f48f48f48,81b48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83b48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr");
+        //48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83f48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81f48f48f48f48f48,81f48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83f48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
+
+        loadRoom(rooms.get(0), "48f48f48f48,165f48,173f48,181f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48,166f48,174f48,182f48f48f48,x49w48f48,156b48,159b48,162b48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48,167f48,175f48,183f48f48f48,x49w48f48,157b48,160y48,163b48f40w40f40f40w40f40f40w48,189b48,193b48,197b48,201b48,205b48f48f48f48,168f48,176f48,184f48f48f48,x49w48f48,158b48,161w48,164b48f40w44f40w42d40w44f40w48,190b48,194y48,198y48,202y48,206b51f51f51f51,169f51,177f51,185f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48,191f48,195i48,199i48,203i48,207f48,54w48,54w48,54w54,170w54,178w54,186w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48,192f48,196f48,200f48,204f48,208f48,156b48,159b48,162b48,171w48,179d48,187w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,157b48,160y48,163b48,172w48,180f48,188w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,158b48,161w48,164brrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w48f51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,120b48,127b48,134b48,141b48f48,120b48,127b48,134b48,141b48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48,121c48,128b48,135b48,142b48f48,121c48,128b48,135b48,142b48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,148f48,152f48,122y48,129y48,136y48,143y48f48,122y48,129y48,136y48,143y48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48,149w48,153w48,123w48,130f48,137f48,144w48f48,123w48,130f48,137f48,144w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48,150w48,154w48,124w48,131w48,138w48,145w48f48,124w48,131w48,138w48,145w48f48,64w48,156b48,159b48,162brr73f71f71f68f67f48f48f48,64w48f48f48,151w48,155w48,125w48,132d48,139w48,146w48f48,125wx48,132d48,139w48,146w48f48f48,157b48,160y48,163brr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48,126w48,133f48,140w48,147w48f48,126w48,133f48,140w48,147w48f48f48,158b48,161w48,164b48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
         rooms.get(0).addChicken(new Chicken(8, 8));
         rooms.get(0).objects.add(player);
         rooms.get(0).addDoor(new Door(5, 1));
@@ -130,7 +150,7 @@ public class Main extends Canvas implements Runnable {
                     player.swordSlice.setSpeed(100);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_G) {
-                    Main.room.addGold(7 * 48, 7 * 48, 1000);
+                    Main.room.addGold(7 * 48, 7 * 48, 3);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_Q) {
                     if (player.state == 0) {
@@ -211,7 +231,7 @@ public class Main extends Canvas implements Runnable {
         this.requestFocus();
         long lastTime = System.nanoTime();
         double ns = 1000000000 / 60d;
-        double nsRender = 1000000000 / 60d;
+        double nsRender = 1000000000 / 144d;
         double delta = 0;
         double renderDelta = 0;
         long timer = System.currentTimeMillis();
@@ -294,9 +314,9 @@ public class Main extends Canvas implements Runnable {
                 } else if (s.charAt(x) == 'c') {
                     chimneyPoints.add(new Point(xPos, yPos));
                     if (flip) {
-                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
+                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
                     } else {
-                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
+                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     }
                 } else if (s.charAt(x) == 'd') {
                     room1.addDoor(new Door(xPos, yPos));
@@ -314,6 +334,14 @@ public class Main extends Canvas implements Runnable {
                     room1.addWall(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     room1.addItemSpot(new ItemSpot(xPos, yPos, shop[tileNum]));
                     tileNum++;
+                } else if (s.charAt(x) == 'y') {
+                    if (flip) {
+                        room1.zOrderTiles.add(new ZOrderTile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
+                        room1.walls.add(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
+                    } else {
+                        room1.zOrderTiles.add(new ZOrderTile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
+                        room1.walls.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
+                    }
                 }
                 if (s.charAt(x) != 'x' && s.charAt(x) != 'r') {
                     flip = false;

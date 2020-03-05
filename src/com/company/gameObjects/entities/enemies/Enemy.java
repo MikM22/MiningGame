@@ -17,7 +17,6 @@ public abstract class Enemy extends Entity {
     protected abstract int getDamageInterval();
 
     protected void checkPlayerCollision() {
-        //fix
         if (getBounds().intersects(Main.player.getPartialBounds()) || leftPlayer) {
             if (!leftPlayer) {
                 inPlayer = true;

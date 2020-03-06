@@ -55,13 +55,15 @@ public class Main extends Canvas implements Runnable {
         System.arraycopy(temp, 0, tiles, 0, 80);
         BufferedImage[] house = Loader.cutSpriteSheet("house", 2, 1, Room.imageMult, 64, 112);
         BufferedImage[] tree = Loader.cutSpriteSheet("tree", 2, 1, Room.imageMult, 48, 48);
+        BufferedImage[] stall = Loader.cutSpriteSheet("stall", 2, 1, Room.imageMult, 80, 64);
         tiles[81] = house[0];
         tiles[82] = Loader.loadImage("farm", Room.imageMult);
         tiles[83] = tree[0];
         tiles[84] = Loader.loadImage("wiztower", Room.imageMult);
-        tiles[85] = Loader.loadImage("stall", Room.imageMult);
+        tiles[85] = stall[0];
         tiles[86] = house[1];
         tiles[87] = tree[1];
+        tiles[88] = stall[1];
 
         int z = 0;
         tileSizes[0] = new Dimension(4, 7);
@@ -137,6 +139,8 @@ public class Main extends Canvas implements Runnable {
                 if (e.getKeyCode() == KeyEvent.VK_R) {
                     player.x = 1100;
                     player.y = 300;
+                    camera.x = 1100 - Display.width / 2 + Main.player.getBounds().width / 2;
+                    camera.y = 300 - Display.height / 2 + Main.player.getBounds().height / 2;
                     room = rooms.get(0);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_H) {

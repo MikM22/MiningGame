@@ -4,6 +4,7 @@ import com.company.Main;
 import com.company.Loader;
 import com.company.Room;
 import com.company.Weapon;
+import com.company.gameArt.DestructibleTile;
 import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
 import com.company.gameObjects.DamageIndicator;
@@ -19,7 +20,8 @@ import static com.company.rendering.Display.mouseDown;
 
 public class Player extends Entity {
     private float attackTime = 0;
-    private int wx, wy, cx, cy;
+    private int wx, wy;
+    public int cx, cy;
     private final BufferedImage pickaxe = Loader.loadImage("pickaxe", Room.imageMult), pickaxeFlipped = Loader.flipped(pickaxe, true);
     private final BufferedImage[] rocks = Loader.cutSpriteSheet("rocks", 3, 1, Room.imageMult, 16, 16);
     private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32), bowString = Loader.cutSpriteSheet("bowString", 4, 1, Room.imageMult, 16, 16);
@@ -140,6 +142,7 @@ public class Player extends Entity {
                                 i--;
                             }
                         }
+                        checkPotCollision();
                     } else {
                         buffer = true;
                     }
@@ -167,6 +170,7 @@ public class Player extends Entity {
                                 chicken.hit(angle);
                             }
                         }
+                        checkPotCollision();
                     } else {
                         buffer = true;
                     }
@@ -205,7 +209,7 @@ public class Player extends Entity {
 
     public void render(Graphics2D g) {
         if (playingTeleportAnim) {
-            teleport.drawAnimation(g, 8 * Room.tw - 16 * 3, 9 * Room.tw - 20 - 124 * 3, 0);
+            teleport.drawAnimation(g, 8 * Room.tw - 16 * 3, 9 * Room.tw - 12 - 124 * 3, 0);
             if (!teleport.isRunning()) {
                 playingTeleportAnim = false;
             }
@@ -289,14 +293,6 @@ public class Player extends Entity {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, img.getWidth(), img.getHeight());
-    }
-
-    public int getCx() {
-        return cx;
-    }
-
-    public int getCy() {
-        return cy;
     }
 
     public void checkCollision() {
@@ -394,5 +390,29 @@ public class Player extends Entity {
             }
         }
         swordSlice.runAnimation();
+    }
+
+    public void updateWeaponPos() {
+        cx = x + getBounds().width / 2;
+        cy = y + getBounds().height / 2;
+        if (state != 2) {
+            wx = cx + (int) (40 * Math.sin((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2));
+            wy = cy + (int) (40 * Math.cos((mouseLeft ? angle - Math.PI : angle) + attackTime + Math.PI / 2)) + 10;
+        } else {
+            wx = cx + (int) (30 * Math.cos(angle));
+            wy = cy + (int) (30 * Math.sin(angle));
+        }
+    }
+
+    private void checkPotCollision() {
+        for (int i = 0; i < Main.room.destructibleTiles.size(); i++) {
+            if (getSliceBounds().intersects(Main.room.destructibleTiles.get(i).getBounds())) {
+                Main.room.addParticle(Main.room.destructibleTiles.get(i).x + Room.tw / 2, Main.room.destructibleTiles.get(i).y + Room.tw / 2, Loader.randomInt(5, 7), 5, .7f, .9f, .5f, 1, 3, true, true, true, true, false, 0, 0, Main.room.destructibleTiles.get(i).getParticleImg());
+                Main.room.art.remove(Main.room.destructibleTiles.get(i));
+                Main.room.walls.remove(Main.room.destructibleTiles.get(i).getTile());
+                Main.room.destructibleTiles.remove(Main.room.destructibleTiles.get(i));
+                i--;
+            }
+        }
     }
 }

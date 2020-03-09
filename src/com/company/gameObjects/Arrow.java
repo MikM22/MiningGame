@@ -2,6 +2,7 @@ package com.company.gameObjects;
 
 import com.company.Loader;
 import com.company.Main;
+import com.company.Room;
 import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
 import com.company.gameObjects.entities.Chicken;
@@ -121,6 +122,18 @@ public class Arrow extends GameObject {
                 hitX = slime.x - (int)x;
                 hitY = slime.y - (int)y;
                 enemyToFollow = slime;
+            }
+        }
+        for (int i = 0; i < Main.room.destructibleTiles.size(); i++) {
+            if (getRotatedBounds().intersects(Main.room.destructibleTiles.get(i).getBounds())) {
+                Main.room.addParticle(Main.room.destructibleTiles.get(i).x + Room.tw / 2, Main.room.destructibleTiles.get(i).y + Room.tw / 2, Loader.randomInt(5, 7), 5, .7f, .9f, .5f, 1, 3, true, true, true, true, false, 0, 0, Main.room.destructibleTiles.get(i).getParticleImg());
+                Main.room.art.remove(Main.room.destructibleTiles.get(i));
+                Main.room.walls.remove(Main.room.destructibleTiles.get(i).getTile());
+                Main.room.destructibleTiles.remove(Main.room.destructibleTiles.get(i));
+                i--;
+                Main.room.objects.remove(this);
+                Main.room.addParticle((int)x, (int)y, 3, 10, .5f, .7f, .5f, 3, 1, true, false, true, 0, 0);
+                Main.room.arrowCount--;
             }
         }
         if (x < 0 || x > Main.room.mapX + 48 || y < 0 || y > Main.room.mapY + 48) {

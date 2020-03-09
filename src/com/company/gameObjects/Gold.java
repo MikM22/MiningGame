@@ -41,7 +41,7 @@ public class Gold extends GameObject {
         if (following) {
             time++;
             xScale = Loader.lerp(1, .3f, time / 5f);
-            double dd = angleDifference(Math.atan2(Main.player.getCy() - y, Main.player.getCx() - x), angle);
+            double dd = angleDifference(Math.atan2(Main.player.cy - y, Main.player.cx - x), angle);
             angle -= dd;
             xVel = (int) (Math.cos(angle) * spd);
             yVel = (int) (Math.sin(angle) * spd);

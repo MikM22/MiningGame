@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.gameArt.*;
+import com.company.gameArt.DestructibleTile;
 import com.company.gameObjects.Gold;
 import com.company.gameObjects.entities.Chicken;
 import com.company.gameObjects.entities.Rat;
@@ -25,14 +26,15 @@ public class Room {
     public ArrayList<GameObject> objects = new ArrayList<>();
     public ArrayList<GameObject> frontObjects = new ArrayList<>();
     public ArrayList<GameArt> art = new ArrayList<>();
-    public ArrayList<GameArt> frontArt = new ArrayList<>();
     public ArrayList<Slime> enemies = new ArrayList<>();
     public ArrayList<Point> rockSpots = new ArrayList<>();
     public ArrayList<Tile> walls = new ArrayList<>();
     public ArrayList<Door> doors = new ArrayList<>();
     public ArrayList<Tile> rocks = new ArrayList<>();
-    public ArrayList<ItemSpot> itemSpots = new ArrayList<>();
     public ArrayList<Chicken> chickens = new ArrayList<>();
+    public ArrayList<DestructibleTile> destructibleTiles = new ArrayList<>();
+    ArrayList<ItemSpot> itemSpots = new ArrayList<>();
+    ArrayList<GameArt> frontArt = new ArrayList<>();
 
     public Room(int xTiles, int yTiles) {
         this.xTiles = xTiles;
@@ -54,7 +56,7 @@ public class Room {
         rocks = new ArrayList<>(room.rocks);
         rockSpots = new ArrayList<>(room.rockSpots);
         frontArt = new ArrayList<>(room.frontArt);
-        //not carrying over itemSpots, chickens, zOrderSwitchTiles because room 0 never cloned
+        //not carrying over itemSpots, chickens, zOrderSwitchTiles, destructibleTiles because room 0 never cloned
     }
 
     void tick() {
@@ -138,6 +140,12 @@ public class Room {
     void addItemSpot(ItemSpot itemSpot) {
         itemSpots.add(itemSpot);
         frontArt.add(0, itemSpot);
+    }
+
+    void addDestructibleTile(DestructibleTile tile) {
+        art.add(tile);
+        walls.add(tile.getTile());
+        destructibleTiles.add(tile);
     }
 
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians) {

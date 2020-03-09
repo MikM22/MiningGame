@@ -3,8 +3,9 @@ package com.company;
 import com.company.gameArt.Door;
 import com.company.gameArt.ItemSpot;
 import com.company.gameArt.Tile;
-import com.company.gameObjects.ZOrderTile;
+import com.company.gameObjects.Particle;
 import com.company.gameObjects.entities.Chicken;
+import com.company.gameObjects.entities.Rat;
 import com.company.gameObjects.entities.Slime;
 import com.company.gameObjects.entities.Player;
 import com.company.rendering.Display;
@@ -42,6 +43,8 @@ public class Main extends Canvas implements Runnable {
     private Weapon test = new Weapon(items[1], 2f, .5f, 1, 5, 5);
     private Weapon og = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
     private Weapon rangeTest = new Weapon(items[7], projectiles[0], 25, 1, 10, 10);
+    private Weapon magicTest = new Weapon(items[15], projectiles[1], 25, 3, 10, 10, null);
+
     private Dimension[] tileSizes = new Dimension[5];
 
     //optimization idea: pass in the Affinetransform old instead of setting it so much
@@ -53,22 +56,23 @@ public class Main extends Canvas implements Runnable {
     private Main() {
         BufferedImage[] temp = Loader.cutSpriteSheet("tiles", 8, 10, Room.imageMult, 16, 16);
         System.arraycopy(temp, 0, tiles, 0, 80);
-        BufferedImage[] house = Loader.cutSpriteSheet("house", 2, 1, Room.imageMult, 64, 112);
-        BufferedImage[] tree = Loader.cutSpriteSheet("tree", 2, 1, Room.imageMult, 48, 48);
-        tiles[81] = house[0];
+        tiles[81] = Loader.loadImage("house", Room.imageMult);;
         tiles[82] = Loader.loadImage("farm", Room.imageMult);
-        tiles[83] = tree[0];
+        tiles[83] = Loader.loadImage("tree", Room.imageMult);;
         tiles[84] = Loader.loadImage("wiztower", Room.imageMult);
         tiles[85] = Loader.loadImage("stall", Room.imageMult);
-        tiles[86] = house[1];
-        tiles[87] = tree[1];
+
+        tiles[86] = Loader.loadImage("houseRoof", Room.imageMult);
+        tiles[87] = Loader.loadImage("stallRoof", Room.imageMult);
+        tiles[88] = Loader.loadImage("tree", Room.imageMult);
+        tiles[89] = Loader.loadImage("tp", Room.imageMult);
 
         int z = 0;
-        tileSizes[0] = new Dimension(4, 7);
+        tileSizes[0] = new Dimension(4, 4);
         tileSizes[1] = new Dimension(2, 4);
         tileSizes[2] = new Dimension(3, 3);
         tileSizes[3] = new Dimension(3, 8);
-        tileSizes[4] = new Dimension(5, 4);
+        tileSizes[4] = new Dimension(5, 2);
 
         for (int i = 0; i < tileSizes.length; i++) {
             for (int x = 0; x < tileSizes[i].width; x++) {
@@ -88,7 +92,7 @@ public class Main extends Canvas implements Runnable {
 //        copyRooms[4] = new Room(25, 20);
         window = new Display(1000, 800, this);
         room = new Room(0, 0);
-        player = new Player(1100, 300);
+        player = new Player(700, 300);
         //Player lol = new Player(350, Display.height / 2);
         camera = new Camera();
         ui = new UI(this);
@@ -97,14 +101,15 @@ public class Main extends Canvas implements Runnable {
 //            rooms.get(0).addEnemy(new Slime(Loader.randomInt(0, 20), Loader.randomInt(0, 20)));
 //        }
 
-        //48f48f48f48,84f48f48f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48,83f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w40f40f40w40f40f40w48,85f48f48f48f48f48f48f48f48f48f48f48f48f48,x49w48f48f48w48f48f40w44f40w42d40w44f40w48f48w48w48w48f51f51f51f51f51f51f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48f48i48i48i48f48,54w48,54w48,54w54w54f54w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48f48f48f48f48f48,83f48f48f48w48d48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,48w48f48w48f48w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48w48frrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w51w51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,81f48f48f48f48f48,81f48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,82f48f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48w48w48w48f48f48w48f48w48f48f48w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48w48w48w48w48f48w48f48w48w48f48w48f48,64w48,83f48f48frr73f71f71f68f67f48f48f48,64w48f48f48w48w48w48d48w48w48f48w48d48w48w48f48f48f48w48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48w48f48w48w48f48w48f48w48w48f48f48f48w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
+        //48f48f48f48,165f48,173f48,181f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48,166f48,174f48,182f48f48f48,x49w48f48,156b48,159b48,162b48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48,167f48,175f48,183f48f48f48,x49w48f48,157b48,160y48,163b48f40w40f40f40w40f40f40w48,189b48,193b48,197b48,201b48,205b48f48f48f48,168f48,176f48,184f48f48f48,x49w48f48,158b48,161w48,164b48f40w44f40w42d40w44f40w48,190b48,194y48,198y48,202y48,206b51f51f51f51,169f51,177f51,185f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48,191f48,195i48,199i48,203i48,207f48,54w48,54w48,54w54,170w54,178w54,186w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48,192f48,196f48,200f48,204f48,208f48,156b48,159b48,162b48,171w48,179d48,187w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,157b48,160y48,163b48,172w48,180f48,188w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,158b48,161w48,164brrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w48f51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,120b48,127b48,134b48,141b48f48,120b48,127b48,134b48,141b48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48,121c48,128b48,135b48,142b48f48,121c48,128b48,135b48,142b48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,148f48,152f48,122y48,129y48,136y48,143y48f48,122y48,129y48,136y48,143y48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48,149w48,153w48,123w48,130f48,137f48,144w48f48,123w48,130f48,137f48,144w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48,150w48,154w48,124w48,131w48,138w48,145w48f48,124w48,131w48,138w48,145w48f48,64w48,156b48,159b48,162brr73f71f71f68f67f48f48f48,64w48f48f48,151w48,155w48,125w48,132d48,139w48,146w48f48,125wx48,132d48,139w48,146w48f48f48,157b48,160y48,163brr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48,126w48,133f48,140w48,147w48f48,126w48,133f48,140w48,147w48f48f48,158b48,161w48,164b48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
 
-        loadRoom(rooms.get(0), "48f48f48f48,165f48,173f48,181f48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48,166f48,174f48,182f48f48f48,x49w48f48,156b48,159b48,162b48f40w40f40f40f40f40f40w48f48f48f48f48f48,64f48f48f48,167f48,175f48,183f48f48f48,x49w48f48,157b48,160y48,163b48f40w40f40f40w40f40f40w48,189b48,193b48,197b48,201b48,205b48f48f48f48,168f48,176f48,184f48f48f48,x49w48f48,158b48,161w48,164b48f40w44f40w42d40w44f40w48,190b48,194y48,198y48,202y48,206b51f51f51f51,169f51,177f51,185f51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48,191f48,195i48,199i48,203i48,207f48,54w48,54w48,54w54,170w54,178w54,186w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48,192f48,196f48,200f48,204f48,208f48,156b48,159b48,162b48,171w48,179d48,187w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,157b48,160y48,163b48,172w48,180f48,188w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,158b48,161w48,164brrr72f71fr72f48f48f48f48f48frrr52w51w51w51w51w51w51w51w48f51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w48,54w48,54w48,54w48,54w48f48,54w48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48,120b48,127b48,134b48,141b48f48,120b48,127b48,134b48,141b48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48,121c48,128b48,135b48,142b48f48,121c48,128b48,135b48,142b48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,148f48,152f48,122y48,129y48,136y48,143y48f48,122y48,129y48,136y48,143y48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48,149w48,153w48,123w48,130f48,137f48,144w48f48,123w48,130f48,137f48,144w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48,150w48,154w48,124w48,131w48,138w48,145w48f48,124w48,131w48,138w48,145w48f48,64w48,156b48,159b48,162brr73f71f71f68f67f48f48f48,64w48f48f48,151w48,155w48,125w48,132d48,139w48,146w48f48,125wx48,132d48,139w48,146w48f48f48,157b48,160y48,163brr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48,126w48,133f48,140w48,147w48f48,126w48,133f48,140w48,147w48f48f48,158b48,161w48,164b48frr67frr68f71f71f68f67f48f48f48f48f48f48,58f48,65f48,60f48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
-        rooms.get(0).addChicken(new Chicken(8, 8));
+        loadRoom(rooms.get(0), "48f48f48f48,153w48,161f48,169w48f48f48,x49w48f48f48f48f48f40w40f40f40f40f40f40w48f48f48f48f48f48f48f48f48,154w48,162f48,170w48f48f48,x49w48f48,88b48f48f48f40w40f40f40f40f40f40w48,87b48f48f48f48f48,64f48f48f48,155w48,163f48,171w48f48f48,x49w48f48f48f48f48f40w40f40f40w40f40f40w48f48w48w48w48f48f48f48f48,156w48,164f48,172w48f48f48,x49w48f48f48,57w48f48f40w44f40w42d40w44f40w48,177f48,179i48,181i48,183i48,185f51f51f51f51,157w51,165f51,173w51f51f48,x50w48f48f48f48f48f40w40w40w41f40w40w40w48,178f48,180f48,182f48,184f48,186f48,54w48,54w48,54w54,158w54,166w54,174w48,54w48,54w48,x53w48f48f48f48f48f48,43f48,43f48,43f48f48,43f48,43f48,43f48,192f48,196f48,200f48,204f48,208f48,88b48f48f48,159w48,167d48,175w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,160w48,168f48,176w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48,57w48frrr72f71fr72f48f48,89f48f48f48frrr52w51w51w51w51w51w51w51w48f51w51w51w51w51w51w48f48f48frrr72f71fr72f48f48f48f48f48fx55w48,54w48,54w48,54w54,86b48,54w48,54w48,54w48f54,86b48,54w48,54w48,54w48,54w48,54w48f48f48frrr72f70fr72f48f48f48f48f48f48,x55w48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48f48frrr72f71fr72f48f48f48f48,59f48f48,x55w48f48f48f48c48f48f48f48f48c48f48f48f48f48f51w51w51wrrr72f71fr72f51w51w51w51w51w48,x50w48f48,136f48,140f48w48w48w48w48f48w48w48w48w48f48f48,54w48,54w48,54wrrr72f71fr72f48,54w48,54w48,54w48,54w48,54w48,x53w48f48,137w48,141w48,120w48,124f48,128f48,132w48f48,120w48,124f48,128f48,132w48f48f48f48f48frrr72f71fr74f48f48f48f48f48f48f48f48,138w48,142w48,121w48,125w48,129w48,133w48f48,121w48,125w48,129w48,133w48f48,64w48,88b48f48frr73f71f71f68f67f48f48f48,64w48f48f48,139w48,143w48,122w48,126d48,130w48,134w48f48,122w48,126d48,130w48,134w48f48f48f48f48frr67frr68f71f71f68f67f48f48f48f48,62w48,63w48,63w48,123w48,127f48,131w48,135w48f48,123w48,127f48,131w48,135w48f48f48f48,57w48f48frr67frr68f71f71f68f67f48f48f48f48f48f48,58w48,65f48,60w48f48f48f48,65f48f48,66w48f48f48f48f48f48f48frr67frr68f71f71f68f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f72f48f48f48f48f48f48frr67frr68f71f71f71f71f71f71f71f71f71f71f71f70f71f71f71f71f71f71f48f48f48f48f48f48f48frr67frr69frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72frr72f");
+//        rooms.get(0).addChicken(new Chicken(8, 8));
+//        rooms.get(0).addRat(new Rat(6, 6));
+//        rooms.get(0).addChicken(new Chicken(5, 8));
+//        rooms.get(0).addEnemy(new Slime(5, 9));
         rooms.get(0).objects.add(player);
         rooms.get(0).addDoor(new Door(5, 1));
-        rooms.get(0).addChicken(new Chicken(5, 8));
-        rooms.get(0).addEnemy(new Slime(5, 9));
 
 
         copyRooms[0].objects.add(player);
@@ -135,9 +140,15 @@ public class Main extends Canvas implements Runnable {
                     System.out.println("fps: " + fps + " ticks: " + tps);
                 }
                 if (e.getKeyCode() == KeyEvent.VK_R) {
-                    player.x = 1100;
-                    player.y = 300;
-                    room = rooms.get(0);
+                    if (!player.playingTeleportAnim) {
+                        player.x = 8 * Room.tw;
+                        player.y = 9 * Room.tw - 20;
+                        player.showPlayer = false;
+                        player.playingTeleportAnim = true;
+                        player.teleport.restart();
+                        player.shadow = false;
+                        room = rooms.get(0);
+                    }
                 }
                 if (e.getKeyCode() == KeyEvent.VK_H) {
                     Main.player.hp -= 5;
@@ -277,7 +288,7 @@ public class Main extends Canvas implements Runnable {
         int numRotations = 0;
         int xPos = 0, yPos = 0;
         ArrayList<Tile> bigTiles = new ArrayList<>();
-        Weapon[] shop = new Weapon[]{test, rangeTest, og};
+        Weapon[] shop = new Weapon[]{test, rangeTest, magicTest};
         int tileNum = 0;
 
         for (int x = 0; x < s.length() ; x++) {
@@ -302,9 +313,9 @@ public class Main extends Canvas implements Runnable {
                     if (flip) {
                         room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
                     } else {
-                        if (Integer.parseInt(tile.toString()) < 80)
+                        if (Integer.parseInt(tile.toString()) < 80 || Integer.parseInt(tile.toString()) > 89) {
                             room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
-                        else {
+                        } else {
                             bigTiles.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                         }
                     }
@@ -323,9 +334,9 @@ public class Main extends Canvas implements Runnable {
                 } else if (s.charAt(x) == 'c') {
                     chimneyPoints.add(new Point(xPos, yPos));
                     if (flip) {
-                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
+                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
                     } else {
-                        room1.frontArt.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
+                        room1.addArt(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     }
                 } else if (s.charAt(x) == 'd') {
                     room1.addDoor(new Door(xPos, yPos));
@@ -343,14 +354,6 @@ public class Main extends Canvas implements Runnable {
                     room1.addWall(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
                     room1.addItemSpot(new ItemSpot(xPos, yPos, shop[tileNum]));
                     tileNum++;
-                } else if (s.charAt(x) == 'y') {
-                    if (flip) {
-                        room1.zOrderTiles.add(new ZOrderTile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
-                        room1.walls.add(new Tile(xPos, yPos, Loader.rotateImage(Loader.flipped(tiles[Integer.parseInt(tile.toString())], true), numRotations * 90)));
-                    } else {
-                        room1.zOrderTiles.add(new ZOrderTile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
-                        room1.walls.add(new Tile(xPos, yPos, Loader.rotateImage(tiles[Integer.parseInt(tile.toString())], numRotations * 90)));
-                    }
                 }
                 if (s.charAt(x) != 'x' && s.charAt(x) != 'r') {
                     flip = false;

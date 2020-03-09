@@ -2,8 +2,8 @@ package com.company;
 
 import com.company.gameArt.*;
 import com.company.gameObjects.Gold;
-import com.company.gameObjects.ZOrderTile;
 import com.company.gameObjects.entities.Chicken;
+import com.company.gameObjects.entities.Rat;
 import com.company.gameObjects.entities.Slime;
 import com.company.gameObjects.GameObject;
 import com.company.gameObjects.Particle;
@@ -20,11 +20,12 @@ public class Room {
     public int xTiles, yTiles;
     public int mapX, mapY;
 
+    public int arrowCount;
+
     public ArrayList<GameObject> objects = new ArrayList<>();
     public ArrayList<GameObject> frontObjects = new ArrayList<>();
     public ArrayList<GameArt> art = new ArrayList<>();
     public ArrayList<GameArt> frontArt = new ArrayList<>();
-    public ArrayList<ZOrderTile> zOrderTiles = new ArrayList<>();
     public ArrayList<Slime> enemies = new ArrayList<>();
     public ArrayList<Point> rockSpots = new ArrayList<>();
     public ArrayList<Tile> walls = new ArrayList<>();
@@ -65,19 +66,11 @@ public class Room {
         for (GameObject gameObject : frontObjectsThisTick) {
             gameObject.tick();
         }
-        for (GameObject gameObject : zOrderTiles) {
-            gameObject.tick();
-        }
     }
 
     void render(Graphics2D g) {
         for (GameArt art : art) {
             art.render(g);
-        }
-        for (ZOrderTile tile : zOrderTiles) {
-            if (!tile.drawInFront()) {
-                tile.render(g);
-            }
         }
         g.setColor(new Color(0, 0, 0, 60));
         for (GameObject obj : objects) {
@@ -90,11 +83,6 @@ public class Room {
         }
         for (GameArt art : frontArt) {
             art.render(g);
-        }
-        for (ZOrderTile tile : zOrderTiles) {
-            if (tile.drawInFront()) {
-                tile.render(g);
-            }
         }
         for (GameObject obj : frontObjects) {
             obj.render(g);
@@ -143,9 +131,13 @@ public class Room {
         chickens.add(chicken);
     }
 
+    public void addRat(Rat rat) {
+        objects.add(rat);
+    }
+
     void addItemSpot(ItemSpot itemSpot) {
         itemSpots.add(itemSpot);
-        frontArt.add(itemSpot);
+        frontArt.add(0, itemSpot);
     }
 
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians) {

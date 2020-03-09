@@ -7,7 +7,7 @@ import com.company.Weapon;
 import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
 import com.company.gameObjects.DamageIndicator;
-import com.company.gameObjects.Projectile;
+import com.company.gameObjects.Arrow;
 import com.company.rendering.*;
 
 import java.awt.*;
@@ -24,7 +24,7 @@ public class Player extends Entity {
     private final BufferedImage[] rocks = Loader.cutSpriteSheet("rocks", 3, 1, Room.imageMult, 16, 16);
     private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32), bowString = Loader.cutSpriteSheet("bowString", 4, 1, Room.imageMult, 16, 16);
     public final BufferedImage string = bowString[0];
-    public final Animation swordSlice = new Animation(2, swordSliceImgs, false);
+    public final Animation swordSlice = new Animation(2, swordSliceImgs, false), teleport = new Animation(4, Loader.cutSpriteSheet("teleport", 10, 3, Room.imageMult, 48, 160), true, true);
     private final PlayerAnimation playerAnimation;
     private double angle, sliceAngle, swordAngle, selectionAngle;
     private boolean mousePressed = true, attackLeft, mouseLeft, buffer;
@@ -33,6 +33,8 @@ public class Player extends Entity {
     private int bowPower, bowHeldTimer, timeSinceLastBow;
     public BufferedImage[] imgs = Loader.cutSpriteSheet("player", 4, 1, Room.imageMult, 16, 20);
     public Weapon currentWeapon;
+    public boolean playingTeleportAnim, showPlayer = true;
+
 
     public Player(int x, int y) {
         super(x, y);
@@ -44,64 +46,74 @@ public class Player extends Entity {
     }
 
     public void tick() {
-        final float spd = 4;
-        xVel = Display.horizontalAxis() * spd;
-        yVel = Display.verticalAxis() * spd;
-        checkCollision();
-        for (Door door : Main.room.doors) {
-            if (getPartialBounds().intersects(door.getBounds())) {
-                Main.onFirstFloor = false;
-                Main.roomNum++;
-                x = (Main.room.xTiles + 1) / 2 * Room.tw;
-                y = (Main.room.yTiles + 1) / 2 * Room.tw;
-                Main.room = Main.rooms.get(Main.roomNum);
-                UI.doRoomTransition();
-                Room room = new Room(Main.copyRooms[Loader.randomInt(0, Main.roomsIveCompleted)]);
-                double prob = Main.roomNum;
-                if (prob > 75) {
-                    prob = 75;
-                }
-                for (int i = 0; i < room.rockSpots.size(); i++) {
-                    Point p = room.rockSpots.get(i);
-                    if (Math.random() * 100 < prob) {
-                        room.addRock(new Tile(p.x, p.y, rocks[Loader.randomInt(0, rocks.length - 1)]));
-                        room.rockSpots.remove(p);
-                        i--;
+        if (showPlayer) {
+            final float spd = 4;
+            xVel = Display.horizontalAxis() * spd;
+            yVel = Display.verticalAxis() * spd;
+            checkCollision();
+            for (Door door : Main.room.doors) {
+                if (getPartialBounds().intersects(door.getBounds())) {
+                    Main.onFirstFloor = false;
+                    Main.roomNum++;
+                    x = (Main.room.xTiles + 1) / 2 * Room.tw;
+                    y = (Main.room.yTiles + 1) / 2 * Room.tw;
+                    Main.room = Main.rooms.get(Main.roomNum);
+                    UI.doRoomTransition();
+                    Room room = new Room(Main.copyRooms[Loader.randomInt(0, Main.roomsIveCompleted)]);
+                    double prob = Main.roomNum;
+                    if (prob > 75) {
+                        prob = 75;
                     }
+                    for (int i = 0; i < room.rockSpots.size(); i++) {
+                        Point p = room.rockSpots.get(i);
+                        if (Math.random() * 100 < prob) {
+                            room.addRock(new Tile(p.x, p.y, rocks[Loader.randomInt(0, rocks.length - 1)]));
+                            room.rockSpots.remove(p);
+                            i--;
+                        }
+                    }
+                    if (room.rockSpots.size() > 0) {
+                        Point p = room.rockSpots.get(Loader.randomInt(0, room.rockSpots.size() - 1));
+                        room.addEnemy(new Slime(p.x, p.y));
+                        room.rockSpots.remove(p);
+                        p = room.rockSpots.get(Loader.randomInt(0, room.rockSpots.size() - 1));
+                        if (Math.random() < .1) {
+                            room.addRat(new Rat(p.x, p.y));
+                        }
+                    }
+                    Main.rooms.add(room);
                 }
-                if (room.rockSpots.size() > 0) {
-                    Point p = room.rockSpots.get(Loader.randomInt(0, room.rockSpots.size() - 1));
-                    room.addEnemy(new Slime(p.x, p.y));
-                }
-                Main.rooms.add(room);
             }
-        }
-        x += xVel;
-        y += yVel;
-        cx = x + getBounds().width / 2;
-        cy = y + getBounds().height / 2;
-        selectionAngle = Math.atan2(Display.mousePos.x - cx, Display.mousePos.y - cy);
-        switch (state) {
-            case 0:
-                calculateSword();
-                break;
-            case 1:
-                calculateSword();
-                break;
-            case 2:
-                double angle = Math.PI / 2 - selectionAngle;
-                swordAngle = -Math.PI / 4 - selectionAngle;
-                wx = cx + (int) (30 * Math.cos(angle));
-                wy = cy + (int) (30 * Math.sin(angle));
-                timeSinceLastBow++;
-                break;
-            case 3:
+            x += xVel;
+            y += yVel;
+            cx = x + getBounds().width / 2;
+            cy = y + getBounds().height / 2;
+            selectionAngle = Math.atan2(Display.mousePos.x - cx, Display.mousePos.y - cy);
+            switch (state) {
+                case 0:
+                    calculateSword();
+                    break;
+                case 1:
+                    calculateSword();
+                    break;
+                case 2:
+                    double angle = Math.PI / 2 - selectionAngle;
+                    swordAngle = -Math.PI / 4 - selectionAngle;
+                    wx = cx + (int) (30 * Math.cos(angle));
+                    wy = cy + (int) (30 * Math.sin(angle));
+                    timeSinceLastBow++;
+                    break;
+                case 3:
 
-                break;
+                    break;
+            }
+            input();
+            playerAnimation.repeatAnimation();
+            mousePressed = !mouseDown;
         }
-        input();
-        playerAnimation.repeatAnimation();
-        mousePressed = !mouseDown;
+        if (playingTeleportAnim) {
+            teleport.runAnimation();
+        }
     }
 
     private void input() {
@@ -182,7 +194,7 @@ public class Player extends Entity {
             if (state == 2) {
                 if (timeSinceLastBow > currentWeapon.attackTime && bowPower > 0) {
                     double angle = Math.PI / 2 - selectionAngle;
-                    Main.room.objects.add(new Projectile(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed * bowPower, currentWeapon.damage, bowPower, Main.projectiles[0]));
+                    Main.room.objects.add(new Arrow(cx + (float) ((30 + Main.projectiles[0].getWidth()) * Math.cos(angle)), cy + (float) ((30 + Main.projectiles[0].getHeight()) * Math.sin(angle)), angle, currentWeapon.speed * bowPower, currentWeapon.damage, bowPower, Main.projectiles[0]));
                     timeSinceLastBow = 0;
                 }
             }
@@ -192,44 +204,57 @@ public class Player extends Entity {
     }
 
     public void render(Graphics2D g) {
-        AffineTransform old = g.getTransform();
-        if (state != 0) {
-            g.drawImage((playerAnimation.isFlipped() ? pickaxe : pickaxeFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
-        } else {
-            g.drawImage((playerAnimation.isFlipped() ? currentWeapon.img : currentWeapon.imgFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
-        }
-        BufferedImage img = null;
-        if (state == 0) {
-            img = angle > 0 ? pickaxe : pickaxeFlipped;
-        } else if (state == 1) {
-            img = angle > 0 ? currentWeapon.img : currentWeapon.imgFlipped;
-        } else if (state == 2) {
-            img = currentWeapon.img;
-        }
-        int h = (int)(32 * 5 * swordSlice.getyScale());
-        if (wy > y + getBounds().width / 2) {
-            Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h/2);
-            if (state == 1 || state == 0) {
-                Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
-            } else if (state == 2) {
-                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
-                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
+        if (playingTeleportAnim) {
+            teleport.drawAnimation(g, 8 * Room.tw - 16 * 3, 9 * Room.tw - 20 - 124 * 3, 0);
+            if (!teleport.isRunning()) {
+                playingTeleportAnim = false;
             }
-        } else {
-            Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h/2);
-            if (state == 1  || state == 0) {
-                Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
-            } else if (state == 2) {
-                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
-                Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
+        }
+        if (showPlayer) {
+            AffineTransform old = g.getTransform();
+            if (state != 0) {
+                g.drawImage((playerAnimation.isFlipped() ? pickaxe : pickaxeFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
+            } else {
+                g.drawImage((playerAnimation.isFlipped() ? currentWeapon.img : currentWeapon.imgFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
+//                if (state == 2) {
+//                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15);
+//                }
             }
-            Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
+            BufferedImage img = null;
+            if (state == 0) {
+                img = angle > 0 ? pickaxe : pickaxeFlipped;
+            } else if (state == 1) {
+                img = angle > 0 ? currentWeapon.img : currentWeapon.imgFlipped;
+            } else if (state == 2) {
+                img = currentWeapon.img;
+            }
+            int h = (int) (32 * 5 * swordSlice.getyScale());
+            if (wy > y + getBounds().width / 2) {
+                Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
+                Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h / 2);
+                if (state == 1 || state == 0) {
+                    Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+                } else if (state == 2) {
+                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
+                }
+            } else {
+                Loader.renderRotatedScaledAnimation(g, old, sliceAngle, cx, cy, swordSlice, cx, cy - h / 2);
+                if (state == 1 || state == 0) {
+                    Loader.renderRotatedImage(g, old, swordAngle - attackTime, wx, wy, img, wx - 25, wy - 20);
+                } else if (state == 2) {
+                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, img, wx - 25, wy - 20);
+                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], wx - 25, wy - 20);
+                }
+                Loader.renderScaledAnimationTree(g, old, this, playerAnimation);
+            }
         }
     }
 
     public void hit(int damage) {
-        hp -= damage;
+        if (showPlayer) {
+            hp -= damage;
+        }
     }
 
     public void setWeapon(Weapon weapon) {

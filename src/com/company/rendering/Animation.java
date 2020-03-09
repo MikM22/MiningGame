@@ -1,5 +1,6 @@
 package com.company.rendering;
 import com.company.Loader;
+import com.company.Main;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,9 +12,16 @@ public class Animation {
     private BufferedImage[] img, flipped;
     private BufferedImage currentImg;
     private float xScale = 1f, yScale = 1f;
-    private boolean done = true, flip = false;
+    private boolean done = true, flip = false, teleport;
 
     public Animation(int speed, BufferedImage[] img, boolean flipHorizontally){
+        this.speed = speed;
+        this.img = img;
+        flipped = Loader.flipped(img, flipHorizontally);
+    }
+
+    public Animation(int speed, BufferedImage[] img, boolean flipHorizontally, boolean teleport){
+        this.teleport = teleport;
         this.speed = speed;
         this.img = img;
         flipped = Loader.flipped(img, flipHorizontally);
@@ -57,6 +65,10 @@ public class Animation {
             if (time > speed) {
                 frame++;
                 time -= speed;
+            }
+            if (teleport && frame == 20) {
+                Main.player.showPlayer = true;
+                Main.player.shadow = true;
             }
             if (frame == img.length) {
                 done = true;

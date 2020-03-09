@@ -144,6 +144,9 @@ public class Loader {
     }
 
     public static BufferedImage rotateImage(BufferedImage image, int angle) {
+        if (image == null) {
+            return null;
+        }
         final double rads = Math.toRadians(angle);
         final double sin = Math.abs(Math.sin(rads));
         final double cos = Math.abs(Math.cos(rads));

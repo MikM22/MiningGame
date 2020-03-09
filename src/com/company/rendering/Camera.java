@@ -13,7 +13,6 @@ public class Camera {
     }
 
     public void tick() {
-        System.out.println(x);
         x += (int)(((Main.player.getX() - x) - Display.width / 2 + Main.player.getBounds().width / 2) * 0.1f);
         y += (int)(((Main.player.getY() - y) - Display.height / 2 + Main.player.getBounds().height / 2) * 0.1f);
 

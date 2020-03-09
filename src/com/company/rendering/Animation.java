@@ -99,10 +99,6 @@ public class Animation {
         return img[0];
     }
 
-    public void drawCroppedAnimation(Graphics g, double x, double y, int rx, int ry, int w, int h) {
-        g.drawImage(currentImg.getSubimage(rx, ry, w, h), (int) x, (int) y, null);
-    }
-
     public void drawAnimation(Graphics g, double x, double y, int offset){
         g.drawImage(currentImg, (int)x - offset, (int)y, null);
     }

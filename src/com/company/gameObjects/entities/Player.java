@@ -23,7 +23,7 @@ public class Player extends Entity {
     private final BufferedImage pickaxe = Loader.loadImage("pickaxe", Room.imageMult), pickaxeFlipped = Loader.flipped(pickaxe, true);
     private final BufferedImage[] rocks = Loader.cutSpriteSheet("rocks", 3, 1, Room.imageMult, 16, 16);
     private final BufferedImage[] swordSliceImgs = Loader.cutSpriteSheet("swordSlice", 5, 1, 5, 32, 32), bowString = Loader.cutSpriteSheet("bowString", 4, 1, Room.imageMult, 16, 16);
-    public final BufferedImage string = bowString[0];
+    public final BufferedImage string = bowString[0], stringFlipped = Loader.flipped(string, true);
     public final Animation swordSlice = new Animation(2, swordSliceImgs, false), teleport = new Animation(4, Loader.cutSpriteSheet("teleport", 10, 3, Room.imageMult, 48, 160), true, true);
     private final PlayerAnimation playerAnimation;
     private double angle, sliceAngle, swordAngle, selectionAngle;
@@ -216,9 +216,9 @@ public class Player extends Entity {
                 g.drawImage((playerAnimation.isFlipped() ? pickaxe : pickaxeFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
             } else {
                 g.drawImage((playerAnimation.isFlipped() ? currentWeapon.img : currentWeapon.imgFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
-//                if (state == 2) {
-//                    Loader.renderRotatedImage(g, old, swordAngle, wx, wy, bowString[bowPower], x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15);
-//                }
+                if (currentWeapon.type == 2) {
+                    g.drawImage((playerAnimation.isFlipped() ? string : stringFlipped), x + 15 * (playerAnimation.isFlipped() ? 1 : -1), y - 15, null);
+                }
             }
             BufferedImage img = null;
             if (state == 0) {

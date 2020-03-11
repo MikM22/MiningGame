@@ -40,11 +40,11 @@ public class Main extends Canvas implements Runnable {
     private final BufferedImage[] tiles = new BufferedImage[210];
     public static final int roomsIveCompleted = 1;
     public static final BufferedImage[] particles = Loader.cutSpriteSheet("particles", 5, 1, Room.imageMult, 8, 8), projectiles = Loader.cutSpriteSheet("projectiles", 3, 1, 2, 16, 16);
-    private static final BufferedImage[] items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16);
+    public static final BufferedImage[] items = Loader.cutSpriteSheet("items", 8, 2, Room.imageMult, 16, 16);
     private Weapon test = new Weapon(items[1], 2f, .5f, 1, 5, 5);
     private Weapon og = new Weapon(Main.items[0], 1, 1, 2, 1, 1);
-    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 25, 1, 10, 10);
-    private Weapon magicTest = new Weapon(items[15], projectiles[1], 25, 3, 10, 10, null);
+    private Weapon rangeTest = new Weapon(items[7], projectiles[0], 25, 1, 10);
+    private Weapon magicTest = new Weapon(items[15], projectiles[1], 25, 3, 10, null);
 
     private Dimension[] tileSizes = new Dimension[5];
 

@@ -9,6 +9,7 @@ import com.company.gameArt.Door;
 import com.company.gameArt.Tile;
 import com.company.gameObjects.DamageIndicator;
 import com.company.gameObjects.Arrow;
+import com.company.gameObjects.Projectile;
 import com.company.rendering.*;
 
 import java.awt.*;
@@ -179,7 +180,7 @@ public class Player extends Entity {
                     bowPower = 1;
                     break;
                 case 3:
-
+                    Main.room.objects.add(new Projectile(cx, cy, Math.PI / 2 - selectionAngle, Main.projectiles[1], true, 5));
                     break;
             }
         }

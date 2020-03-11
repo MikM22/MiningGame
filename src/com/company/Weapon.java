@@ -8,7 +8,7 @@ public class Weapon {
     public BufferedImage img, imgFlipped, projectileImg;
     public float xRangeScale, yRangeScale;
     public int attackTime, damage, KBMultiplier;
-    public int range, speed, type;
+    public int speed, type;
     public Particle particle;
 
     public Weapon(BufferedImage img, float xRangeScale, float yRangeScale, int attackTime, int damage, int KBMultiplier) {
@@ -22,18 +22,17 @@ public class Weapon {
         this.KBMultiplier = KBMultiplier;
     }
 
-    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int range, int speed) {
+    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int speed) {
         type = 2;
         this.img = img;
         imgFlipped = Loader.flipped(img, true);
         this.projectileImg = projectileImg;
         this.attackTime = attackTime;
         this.damage = damage;
-        this.range = range;
         this.speed = speed;
     }
 
-    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int range, int speed, Particle particle) {
+    public Weapon(BufferedImage img, BufferedImage projectileImg, int attackTime, int damage, int speed, Particle particle) {
         type = 3;
         this.img = img;
         imgFlipped = Loader.flipped(img, true);
@@ -41,7 +40,6 @@ public class Weapon {
         this.particle = particle;
         this.attackTime = attackTime;
         this.damage = damage;
-        this.range = range;
         this.speed = speed;
     }
 }

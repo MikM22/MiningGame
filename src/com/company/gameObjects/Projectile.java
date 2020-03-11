@@ -1,6 +1,7 @@
 package com.company.gameObjects;
 
 import com.company.Loader;
+import com.company.Main;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,6 +23,9 @@ public class Projectile extends GameObject {
     public void tick() {
         xVel = (float) (Math.cos(angle) * speed);
         yVel = (float) (Math.sin(angle) * speed);
+        if (fire) {
+            Main.room.addParticle(x, y, 2, 1, .6f, 1, .3f, .5f, 4, true, false, true, 0, 0, 10, Color.red);
+        }
         x += xVel;
         y += yVel;
     }

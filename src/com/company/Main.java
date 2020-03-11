@@ -133,6 +133,7 @@ public class Main extends Canvas implements Runnable {
         addMouseListener(mouseAdapter);
         addMouseWheelListener(e -> Camera.zoom -= e.getWheelRotation() * (1/3d));
 
+
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (!keysDown.contains(e.getKeyCode()) && (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_D)) {
@@ -190,7 +191,7 @@ public class Main extends Canvas implements Runnable {
                 keysDown.remove(Integer.valueOf(e.getKeyCode()));
             }
         });
-        player.setWeapon(rangeTest);
+        player.setWeapon(magicTest);
         start();
     }
 
@@ -255,7 +256,7 @@ public class Main extends Canvas implements Runnable {
         this.requestFocus();
         long lastTime = System.nanoTime();
         double ns = 1000000000 / 60d;
-        double nsRender = 1000000000 / 144d;
+        double nsRender = 1000000000 / 60d;
         double delta = 0;
         double renderDelta = 0;
         long timer = System.currentTimeMillis();

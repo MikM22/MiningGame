@@ -160,6 +160,13 @@ public class Room {
         }
     }
 
+    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians, int rectSizeMin, int rectSizeMax, Color rectColor1, Color rectColor2) {
+        //SELECT RANDOM COLOR
+        for (int i = 0; i < num; i++) {
+            frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, true, true, Loader.randomInt(rectSizeMin, rectSizeMax), rectColor1));
+        }
+    }
+
     public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean gravity, boolean shadow, boolean randomAngle, boolean front, double angle, double coneRadians, BufferedImage img) {
         if (front) {
             for (int i = 0; i < num; i++) {

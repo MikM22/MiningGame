@@ -4,14 +4,17 @@ import com.company.Loader;
 import com.company.Main;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 public class Particle extends GameObject {
     private float rate, acceleration = 5;
-    private int height;
+    private int height, rectSize;
     private double angle, speed;
-    private boolean particlesMove, gravity, front;
+    private boolean particlesMove, gravity, front, rectangle;
     private BufferedImage particleImg;
+    private Color rectColor;
     private double x, y;
 
     public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime, boolean front) {
@@ -24,6 +27,25 @@ public class Particle extends GameObject {
         this.front = front;
         this.speed = speed;
         this.particlesMove = particlesMove;
+        this.gravity = false;
+        rate = 1 / (maxLifeTime * 30f);
+        shadow = false;
+        particleImg = Main.particles[0];
+    }
+
+    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime, boolean front, boolean rectangle, int rectSize, Color rectColor) {
+        super(0, 0);
+        this.x = x;
+        this.y = y;
+        xScale = size;
+        yScale = size;
+        this.rectSize = rectSize;
+        this.angle = angle;
+        this.front = front;
+        this.rectColor = rectColor;
+        this.speed = speed;
+        this.particlesMove = particlesMove;
+        this.rectangle = rectangle;
         this.gravity = false;
         rate = 1 / (maxLifeTime * 30f);
         shadow = false;
@@ -72,7 +94,18 @@ public class Particle extends GameObject {
     }
 
     public void render(Graphics2D g) {
+        if (rectangle) {
+            g.setColor(rectColor);
+            g.fill(rectangle());
+        } else
         Loader.renderScaledImageCenter(g, g.getTransform(), (int)x, (int)y + height, this, particleImg);
+    }
+
+    private Area rectangle() {
+        Area a = new Area(new Rectangle((int)x, (int)y, rectSize, rectSize));
+        AffineTransform af = new AffineTransform();
+        af.rotate(angle, x, y);
+        return a.createTransformedArea(af);
     }
 
     public Rectangle getBounds() {

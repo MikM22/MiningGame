@@ -161,6 +161,25 @@ public class Loader {
         return rotateOp.filter(image,rotatedImage);
     }
 
+    public static Point rotatePoint(float cx, float cy, double angle, Point p)
+    {
+        double s = Math.sin(angle);
+        double c = Math.cos(angle);
+
+        // translate point back to origin:
+        p.x -= cx;
+        p.y -= cy;
+
+        // rotate point
+        double xnew = p.x * c - p.y * s;
+        double ynew = p.x * s + p.y * c;
+
+        // translate point back:
+        p.x = (int) (xnew + cx);
+        p.y = (int) (ynew + cy);
+        return p;
+    }
+
     public static BufferedImage flipped(BufferedImage image, boolean horizontal) {
         AffineTransform tx;
         if (horizontal) {

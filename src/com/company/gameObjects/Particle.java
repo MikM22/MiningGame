@@ -55,8 +55,13 @@ public class Particle extends GameObject {
 
     public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, boolean gravity, boolean shadow, float maxLifeTime, boolean front, BufferedImage img) {
         super(0, 0);
-        this.x = x;
-        this.y = y;
+        if (rectangle) {
+            this.x = Loader.rotatePoint(x, y, angle, new Point(x + (int)rectSize, y + (int)rectSize)).x;
+            this.y = Loader.rotatePoint(x, y, angle, new Point(x + (int)rectSize, y + (int)rectSize)).y;
+        } else {
+            this.x = x;
+            this.y = y;
+        }
         xScale = size;
         yScale = size;
         this.angle = angle;

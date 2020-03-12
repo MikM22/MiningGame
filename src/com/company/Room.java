@@ -160,10 +160,12 @@ public class Room {
         }
     }
 
-    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians, int rectSizeMin, int rectSizeMax, Color rectColor1, Color rectColor2) {
+    public void addParticle(int x, int y, int num, int radius, float sizeMin, float sizeMax, float speedMin, float speedMax, float maxLifeTime, boolean particlesMove, boolean front, boolean randomAngle, double angle, double coneRadians, int rectSizeMin, int rectSizeMax, Color rectColor1, Color rectColor2, float rectRate) {
         //SELECT RANDOM COLOR
+        double d = Math.random();
+        Color c = new Color((int) (rectColor1.getRed() * d + rectColor2.getRed() * (1 - d)), (int) (rectColor1.getGreen() * d + rectColor2.getGreen() * (1 - d)), (int) (rectColor1.getBlue() * d + rectColor2.getBlue() * (1 - d)));
         for (int i = 0; i < num; i++) {
-            frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, true, true, Loader.randomInt(rectSizeMin, rectSizeMax), rectColor1));
+            frontObjects.add(new Particle((int) (x + Loader.randomFloat(-1, 1) * radius), (int) (y + Loader.randomFloat(-1, 1) * radius), Loader.randomFloat(sizeMin, sizeMax), randomAngle ? Loader.randomInt(0, 360) : angle + Loader.randomDouble(-coneRadians, coneRadians), Loader.randomDouble(speedMin, speedMax), particlesMove, maxLifeTime, true, true, Loader.randomInt(rectSizeMin, rectSizeMax), c, rectRate));
         }
     }
 

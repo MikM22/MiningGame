@@ -9,8 +9,8 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 public class Particle extends GameObject {
-    private float rate, acceleration = 5;
-    private int height, rectSize;
+    private float rate, acceleration = 5, rectRate, rectSize;
+    private int height;
     private double angle, speed;
     private boolean particlesMove, gravity, front, rectangle;
     private BufferedImage particleImg;
@@ -33,7 +33,7 @@ public class Particle extends GameObject {
         particleImg = Main.particles[0];
     }
 
-    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime, boolean front, boolean rectangle, int rectSize, Color rectColor) {
+    public Particle(int x, int y, float size, double angle, double speed, boolean particlesMove, float maxLifeTime, boolean front, boolean rectangle, int rectSize, Color rectColor, float rectRate) {
         super(0, 0);
         this.x = x;
         this.y = y;
@@ -42,6 +42,7 @@ public class Particle extends GameObject {
         this.rectSize = rectSize;
         this.angle = angle;
         this.front = front;
+        this.rectRate = rectRate;
         this.rectColor = rectColor;
         this.speed = speed;
         this.particlesMove = particlesMove;
@@ -81,6 +82,8 @@ public class Particle extends GameObject {
                 speed *= .95f;
             }
         }
+        if (rectSize > 0)
+            rectSize -= rectRate;
         xScale -= rate;
         yScale -= rate;
         shadowMultiplier = xScale;
@@ -102,7 +105,7 @@ public class Particle extends GameObject {
     }
 
     private Area rectangle() {
-        Area a = new Area(new Rectangle((int)x, (int)y, rectSize, rectSize));
+        Area a = new Area(new Rectangle((int)x, (int)y, (int)rectSize, (int)rectSize));
         AffineTransform af = new AffineTransform();
         af.rotate(angle, x, y);
         return a.createTransformedArea(af);

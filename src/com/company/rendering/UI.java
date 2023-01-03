@@ -136,16 +136,4 @@ public class UI {
         }
         return font;
     }
-//        g.setColor(Color.white);
-//        g.setFont(pixel);
-//        g.drawString("Fart poo, but is it you?", 50, 50);
-//        g.setFont(compass);
-//        g.drawString("Fart poo, but is it you?", 50, 100);
-//        g.setFont(equipment);
-//        g.drawString("Fart poo, but is it you?", 50, 150);
-//        g.setFont(expression);
-//        g.drawString("Fart poo, but is it you?", 50, 200);
-//        g.setFont(futile);
-//        g.drawString("Fart poo, but is it you?", 50, 250);
-//        g.setFont(matchup);
 }
